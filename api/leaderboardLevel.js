@@ -18,7 +18,7 @@ module.exports = async (app, req, res) => {
       type: req.query.hasOwnProperty("week") ? "2" : "1",
     }  
 
-    request.post('http://boomlings.com/database/getGJLevelScores211.php', {
+    request.post(req.server + '/database/getGJLevelScores211.php', {
     form : params}, async function(err, resp, body) { 
 
       if (body == '-1' || !body) return res.send("-1")

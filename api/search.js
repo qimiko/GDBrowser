@@ -66,7 +66,7 @@ module.exports = async (app, req, res) => {
     if (req.params.text == "*") delete filters.str
 
 
-    request.post('http://boomlings.com/database/getGJLevels21.php', {
+    request.post(req.server + '/database/getGJLevels21.php', {
     form : filters}, async function(err, resp, body) {
         
     if (!body || body == '-1') return res.send("-1")
@@ -83,10 +83,11 @@ module.exports = async (app, req, res) => {
       let arr = x.split(':')
       authorList[arr[0]] = [arr[1], arr[2]]})
 
-    let levelArray = preRes.map(x => app.parseResponse(x))
+    let levelArray = preRes.map(x => app.parseResponse(x)).filter(x => x[1])
 
     await levelArray.forEach(async (x, y) => {
         let keys = Object.keys(x)
+
         x.name = x[2];
         x.id = x[1];
         x.description = Buffer.from(x[3], 'base64').toString() || "(No description provided)",
@@ -99,7 +100,7 @@ module.exports = async (app, req, res) => {
         x.disliked = x[14] < 0;
         x.length = length[x[15]] || "?";
         x.stars = x[18];
-        x.orbs = orbs[x[18]];
+        x.orbs = orbs[x[18]] || "?";
         x.diamonds = x[18] < 2 ? 0 : parseInt(x[18]) + 2,
         x.featured = x[19] > 0;
         x.epic = x[42] == 1;

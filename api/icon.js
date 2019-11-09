@@ -31,7 +31,7 @@ module.exports = async (app, req, res) => {
 
   let username = req.params.text
 
-  request.post('http://boomlings.com/database/getGJUsers20.php', {
+  request.post(req.server + '/database/getGJUsers20.php', {
     form: {
       str: username,
       secret: 'Wmfd2893gb7'
@@ -39,7 +39,7 @@ module.exports = async (app, req, res) => {
   }, function (err1, res1, body1) {
     let result = app.parseResponse(body1);
 
-    request.post('http://boomlings.com/database/getGJUserInfo20.php', {
+    request.post(req.server + '/database/getGJUserInfo20.php', {
       form: {
         targetAccountID: result[16],
         secret: 'Wmfd2893gb7'

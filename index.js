@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require("fs")
 const timeout = require('connect-timeout')
 const compression = require('compression');
+const parser = require('cookie-parser')
 
 let api = true;
 let gdicons = fs.readdirSync('./icons/iconkit')
@@ -11,6 +12,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(timeout('25s'));
 app.use(haltOnTimedout)
+app.use(parser())
+
+app.use(function(req, res, next) {
+  req.server = 'http://' + (req.cookies.server || "boomlings.com")
+  next()
+})
+
 app.set('json spaces', 2)
 
 app.modules = {}
@@ -50,6 +58,10 @@ app.use('/gauntlets', express.static(__dirname + '/assets/gauntlets', {maxAge: "
 app.use('/difficulty', express.static(__dirname + '/assets/gdfaces', {maxAge: "7d"}));
 app.use('/iconkitbuttons', express.static(__dirname + '/assets/iconkitbuttons', {maxAge: "7d"}));
 app.use('/gdicon', express.static(__dirname + '/icons/iconkit', {maxAge: "7d"}));
+
+app.post("/gdps", function(req, res) {
+  app.modules.testGDPS(app, req, res)
+})
 
 app.get("/api", function(req, res) {
   res.sendFile(__dirname + "/html/api.html")
@@ -161,6 +173,7 @@ app.get("/:id", function(req, res) {
 })    
 
 app.get("/", function(req, res) {
+  console.log(req.server)
   res.sendFile(__dirname + "/html/home.html")
 })    
 

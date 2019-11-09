@@ -13,19 +13,20 @@ module.exports = async (app, req, res, api, ID, analyze) => {
     else if (levelID == "weekly") levelID = -2
     else levelID = levelID.replace(/[^0-9]/g, "")
 
-    request.post('http://boomlings.com/database/downloadGJLevel22.php', {
+    request.post(req.server + '/database/downloadGJLevel22.php', {
     form : { 
         levelID, 
         secret : app.secret
     }}, async function(err, resp, body) { 
 
-      if (body == '-1') {
+      let levelInfo = app.parseResponse(body)
+
+      if (body == '-1' || !levelInfo[1]) {
         if (!api && levelID < 0) return res.redirect('/')
         if (!api) return res.redirect('search/' + req.params.id)
         else return res.send("-1")
       }
 
-      let levelInfo = app.parseResponse(body)
           let level = {
                 name: levelInfo[2],
                 id: levelInfo[1],
@@ -39,7 +40,7 @@ module.exports = async (app, req, res, api, ID, analyze) => {
                 disliked : levelInfo[14] < 0,
                 length: length[levelInfo[15]],
                 stars: levelInfo[18],
-                orbs: orbs[levelInfo[18]],
+                orbs: orbs[levelInfo[18]] || "?",
                 diamonds: levelInfo[18] < 2 ? 0 : parseInt(levelInfo[18]) + 2,
                 featured: levelInfo[19] > 0,
                 epic: levelInfo[42] == 1,
@@ -75,11 +76,11 @@ module.exports = async (app, req, res, api, ID, analyze) => {
           level.difficultyFace = `${levelInfo[17] != 1 ? level.difficulty.toLowerCase() : `demon-${level.difficulty.toLowerCase().split(' ')[0]}`}${level.epic ? '-epic' : `${level.featured ? '-featured' : ''}`}`
 
 
-          request.post('http://boomlings.com/database/getGJUsers20.php', {
+          request.post(req.server + '/database/getGJUsers20.php', {
             form: {str: level.authorID, secret: app.secret}
           }, function (err1, res1, b1) {
             let gdSearchResult = app.parseResponse(b1)
-          request.post('http://boomlings.com/database/getGJUserInfo20.php', {
+          request.post(req.server + '/database/getGJUserInfo20.php', {
             form: {targetAccountID: gdSearchResult[16], secret: app.secret}
           }, function (err2, res2, b2) {
               if (b2 != '-1') {
@@ -93,7 +94,7 @@ module.exports = async (app, req, res, api, ID, analyze) => {
                 level.accountID = "0"
               }
 
-        request.post('http://boomlings.com/database/getGJSongInfo.php', {
+        request.post(req.server + '/database/getGJSongInfo.php', {
         form : { 
         songID : level.customSong, 
         secret : app.secret

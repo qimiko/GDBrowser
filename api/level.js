@@ -18,24 +18,30 @@ module.exports = async (app, req, res, api, analyze) => {
 
   if (analyze || req.query.hasOwnProperty("download")) return app.modules.download(app, req, res, api, levelID, analyze)
 
-  request.post('http://boomlings.com/database/getGJLevels21.php', {
+  request.post(req.server + '/database/getGJLevels21.php', {
   form : { 
       str : levelID, 
       secret : app.secret,
       type: 0
   }}, async function(err, resp, body) { 
 
-    if (body == '-1') {
+    if (!body || body == '-1') {
       if (!api) return res.redirect('search/' + req.params.id)
       else return res.send("-1")
     }
 
     let preRes = body.split('#')[0].split('|', 10)
+    let levelInfo = app.parseResponse(preRes[0])
+
+    if (!levelInfo[1]) {
+      if (!api) return res.redirect('search/' + req.params.id)
+      else return res.send("-1")
+    }
+    
     let author = body.split('#')[1].split('|')[0].split(':')
     let song = '~' + body.split('#')[2]; 
     song =  app.parseResponse(song.split(':')[0], '~|~')
 
-    let levelInfo = app.parseResponse(preRes[0])
         let level = {
               name: levelInfo[2],
               id: levelInfo[1],
@@ -49,7 +55,7 @@ module.exports = async (app, req, res, api, analyze) => {
               disliked : levelInfo[14] < 0,
               length: length[levelInfo[15]] || "?",
               stars: levelInfo[18],
-              orbs: orbs[levelInfo[18]],
+              orbs: orbs[levelInfo[18]] || "?",
               diamonds: levelInfo[18] < 2 ? 0 : parseInt(levelInfo[18]) + 2,
               featured: levelInfo[19] > 0,
               epic: levelInfo[42] == 1,

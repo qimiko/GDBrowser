@@ -3,7 +3,7 @@ const fs = require('fs')
 
 module.exports = async (app, req, res, api, getLevels) => {
 
-  request.post('http://boomlings.com/database/getGJUsers20.php', {
+  request.post(req.server + '/database/getGJUsers20.php', {
     form: {
       str: getLevels || req.params.id,
       secret: app.secret
@@ -12,7 +12,7 @@ module.exports = async (app, req, res, api, getLevels) => {
 
     let gdSearchResult = app.parseResponse(b1)
 
-    request.post('http://boomlings.com/database/getGJUserInfo20.php', {
+    request.post(req.server + '/database/getGJUserInfo20.php', {
       form: {
         targetAccountID: gdSearchResult[16],
         secret: app.secret

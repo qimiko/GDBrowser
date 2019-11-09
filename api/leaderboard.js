@@ -5,7 +5,7 @@ module.exports = async (app, req, res) => {
     let amount = 100;
     let count = req.query.count ? parseInt(req.query.count) : null
     if (count && count > 0) {
-      if (count > 2500) amount = 2500
+      if (count > 5000) amount = 5000
       else amount = count;
     }
 
@@ -15,7 +15,7 @@ module.exports = async (app, req, res) => {
       type: (req.query.hasOwnProperty("creator") || req.query.hasOwnProperty("creators")) ? "creators" : "top",
     }  
 
-    request.post('http://boomlings.com/database/getGJScores20.php', {
+    request.post(req.server + '/database/getGJScores20.php', {
     form : params}, async function(err, resp, body) { 
 
       if (body == '-1' || !body) return res.send("-1")
