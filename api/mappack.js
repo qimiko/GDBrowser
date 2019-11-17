@@ -6,7 +6,7 @@ const util = require('util')
 // "name": [level,level,level,diff]
 module.exports = async (app) => {
 	const pages = Math.ceil(await getPackCount()/10);
-	mapPacks = {}
+	let mapPacks = {}
 	for (var i = 0; i < pages; i++) {
 		mapPacks = Object.assign({}, mapPacks, await getListOfPacks(app, i));
 	}
@@ -24,7 +24,7 @@ async function getListOfPacks(app, page) {
 		6: 'demon',
 	}
 	const requestPromise = util.promisify(request.post);
-	response = await requestPromise('https://absolllute.com/gdps/gdapi/getGJMapPacks.php', {
+	const response = await requestPromise('https://absolllute.com/gdps/gdapi/getGJMapPacks.php', {
 		form: {
 			page: page
 		}
@@ -32,7 +32,7 @@ async function getListOfPacks(app, page) {
 	if (response.err || !response.body || response.body == '-1' || response.body == '###10:10:10#-1') {
 		return "-1"
 	}
-	packArray = {}
+	let packArray = {}
 	for (const pack of response.body.split('|')) {
 		const result = app.parseResponse(pack, ':');
 		const levels = result['3'].split(',');
@@ -45,7 +45,7 @@ async function getListOfPacks(app, page) {
 
 async function getPackCount() {
 	const requestPromise = util.promisify(request.post);
-	response = await requestPromise('https://absolllute.com/gdps/gdapi/getGJMapPacks.php', {
+	const response = await requestPromise('https://absolllute.com/gdps/gdapi/getGJMapPacks.php', {
 		form: {
 			page: 0
 		}
@@ -53,6 +53,6 @@ async function getPackCount() {
 	if (response.err || !response.body || response.body == '-1' || response.body == '###10:10:10#-1') {
 		return "-1"
 	}
-	footer = response.body.split('#')[1];
+	const footer = response.body.split('#')[1];
 	return footer.split(':')[0]
 }
