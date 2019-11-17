@@ -327,25 +327,23 @@ module.exports = async (app, req, res) => {
 
     if (req.query.hasOwnProperty("noUser") || req.query.hasOwnProperty("nouser") || username == "icon") return buildIcon()
   
-    request.post('http://boomlings.com/database/getGJUsers20.php', {
+    request.post('https://absolllute.com/gdps/gdapi/incl/profiles/getGJUsers.php', {
       form: {
         str: username,
-        secret: app.secret
+        gameVersion: 21,
       }
     }, function (err1, res1, body1) {
       if (err1 || !body1 || body1 == "-1") return buildIcon()
       else result = app.parseResponse(body1);
   
-      request.post('http://boomlings.com/database/getGJUserInfo20.php', {
+      request.post('https://absolllute.com/gdps/gdapi/incl/profiles/getGJUserInfo.php', {
         form: {
           targetAccountID: result[16],
-          secret: app.secret
+          gameVersion: 21,
         }
       }, function (err2, res2, body2) {
-  
         if (!err2 && body2 && body2 != '-1') return buildIcon(app.parseResponse(body2));
         else return buildIcon()
-
     })
   });
 

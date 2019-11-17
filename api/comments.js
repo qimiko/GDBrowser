@@ -7,15 +7,15 @@ module.exports = async (app, req, res) => {
         accountID : req.params.id, 
         levelID: req.params.id,
         page: req.query.page || 0,
-        secret: app.secret,
         mode: req.query.hasOwnProperty("top") ? "1" : "0",
+        gameVersion: 21,
+        binaryVersion: 33,
     }  
 
-    let path = "getGJComments21"
-    if (req.query.type == "commentHistory") path = "getGJCommentHistory"
-    else if (req.query.type == "profile") path = "getGJAccountComments20"
+    let path = "getGJComments"
+    if (req.query.type == "profile") path = "incl/comments/getGJAccountComments"
 
-    request.post(`http://boomlings.com/database/${path}.php`, {
+    request.post(`https://absolllute.com/gdps/gdapi/${path}.php`, {
     form : params}, async function(err, resp, body) { 
 
       if (err || body == '-1' || !body) return res.send("-1")
@@ -47,7 +47,10 @@ module.exports = async (app, req, res) => {
           comment.accountID = y[16]
           comment.form = ['icon', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'][Number(y[14])]
           if (x[10] > 0) comment.percent = x[10]
-          if (x[12] && x[12].includes(',')) comment.modColor = true
+          if (comment.content.startsWith('&#60;cg&#62;')) {
+            comment.modColor = true;
+            comment.content = comment.content.replace('&#60;cg&#62;', '').replace('&#60;/c&#62;', '');
+          }
         }
         commentArray.push(comment)
       }) 

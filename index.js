@@ -19,10 +19,8 @@ fs.readdirSync('./api').forEach(x => {
 })
 
 app.secret = 'Wmfd2893gb7'
-
-const secrets = require("./misc/secretStuff.json")
-app.id = secrets.id
-app.gjp = secrets.gjp
+app.id = ''
+app.gjp = ''
 //these are the only two things in secretStuff.json, both are only used for level leaderboards
 
 function haltOnTimedout (req, res, next) {
@@ -125,8 +123,7 @@ app.get("/api/leaderboardLevel/:id", function(req, res) {
 })   
 
 app.get("/api/leaderboard", function(req, res, api) {
-  if (req.query.hasOwnProperty("accurate")) app.modules.accurateLeaderboard(app, req, res)
-  else return app.modules.leaderboard(app, req, res)
+  return app.modules.leaderboard(app, req, res)
 })   
 
 app.get("/api/mappacks", async function(req, res) {

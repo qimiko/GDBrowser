@@ -17,13 +17,12 @@ module.exports = async (app, req, res) => {
     let filters = {
         str: req.params.text,
 
-        diff: req.query.diff,
+        diff: req.query.diff || '-',
         demonFilter: req.query.demonFilter,
         page: req.query.page || 0,
         gauntlet: req.query.gauntlet || 0,
-        len: req.query.length,
-        song: req.query.songID,
-
+        len: req.query.length || '-',
+        song: req.query.songID || '',
         featured: req.query.hasOwnProperty("featured") ? 1 : 0,
         originalOnly: req.query.hasOwnProperty("original") ? 1 : 0,
         twoPlayer: req.query.hasOwnProperty("twoPlayer") ? 1 : 0,
@@ -32,10 +31,9 @@ module.exports = async (app, req, res) => {
         star: req.query.hasOwnProperty("starred") ? 1 : 0,
         noStar: req.query.hasOwnProperty("noStar") ? 1 : 0,
         customSong: req.query.hasOwnProperty("customSong") ? 1 : 0,
-
         type: req.query.type || 0,
-        secret: app.secret
-    }  
+        gameVersion: '19',
+    }
 
     let foundPack = mapPacks[req.params.text.toLowerCase()]
     if (foundPack) filters.str = `${foundPack[0]},${foundPack[1]},${foundPack[2]}`;
@@ -65,11 +63,10 @@ module.exports = async (app, req, res) => {
 
     if (req.params.text == "*") delete filters.str
 
-
-    request.post('http://boomlings.com/database/getGJLevels21.php', {
+    request.post('https://absolllute.com/gdps/gdapi/getGJLevels19.php', {
     form : filters}, async function(err, resp, body) {
-        
-    if (err || !body || body == '-1') return res.send("-1")
+
+    if (err || !body || body == '-1' || body == '###10:10:10#-1') return res.send("-1")
     let preRes = body.split('#')[0].split('|', 10)
     let authorList = {}
     let songList = {}
@@ -94,8 +91,8 @@ module.exports = async (app, req, res) => {
         x.authorID = x[6];
         x.accountID = authorList[x[6]] ? authorList[x[6]][1] : "0";
         x.difficulty = difficulty[x[9]];
-        x.downloads = x[10];
-        x.likes = x[14];
+        x.downloads = x[10] - 300;
+        x.likes = x[14] - 100;
         x.disliked = x[14] < 0;
         x.length = length[x[15]] || "?";
         x.stars = x[18];
@@ -114,12 +111,9 @@ module.exports = async (app, req, res) => {
         x.large = x[45] > 40000;
         x.cp = (x.stars > 0) + x.featured + x.epic;
 
-        if (x[17] == 1) x.difficulty += ' Demon'
-        if (x.difficulty == "Insane Demon") x.difficulty = "Extreme Demon"
-        else if (x.difficulty == "Harder Demon") x.difficulty = "Insane Demon"    
-        else if (x.difficulty == "Normal Demon") x.difficulty = "Medium Demon"   
+        if (x[17] == 1) x.difficulty += 'Demon'
         else if (x[25] == 1) x.difficulty = 'Auto'
-        x.difficultyFace = `${x[17] != 1 ? x.difficulty.toLowerCase() : `demon-${x.difficulty.toLowerCase().split(' ')[0]}`}${x.epic ? '-epic' : `${x.featured ? '-featured' : ''}`}`
+        x.difficultyFace = `${x[17] != 1 ? x.difficulty.toLowerCase() : `demon-hard`}${x.epic ? '-epic' : `${x.featured ? '-featured' : ''}`}`
 
         let songSearch = songs.find(y => y['~1'] == x[35])
 

@@ -17,9 +17,6 @@
 		<img src="../assets/tab-top-on.png" class="leaderboardTab" id="topTabOn" style="display: none">
 		<img src="../assets/tab-top-off.png" class="leaderboardTab leaderboardClick" id="topTabOff">
 
-		<img src="../assets/tab-accurate-on.png" class="sideSpaceC leaderboardTab" id="accurateTabOn">
-		<img src="../assets/tab-accurate-off.png" class="sideSpaceC leaderboardTab leaderboardClick" id="accurateTabOff" style="display: none">
-
 		<img src="../assets/tab-creators-on.png" class="sideSpaceC leaderboardTab" id="creatorTabOn" style="display: none">
 		<img src="../assets/tab-creators-off.png" class="sideSpaceC leaderboardTab leaderboardClick" id="creatorTabOff">
 	</div>
@@ -73,9 +70,6 @@ let loading = false;
 let top250Text = 
 `The <g>Top 250<> leaderboard contains the <g>top 250 players<>, sorted by <y>star<> value. However, due to <o>hackers<> flooding the leaderboard, this leaderboard has been <b>frozen<> for well over 2 years and displays <o>very outdated information<>.`
 
-let accurateText =
-`The <g>Accurate Leaderboard<> is a highly accurate, hacker-proof leaderboard with <y>proper stats and positioning<> (unlike the regular one). It is managed by <b>SMJSGaming, XShadowWizardX, Pepper360, Octeract<>, and many many other helpers. You can check out their interactive <a target="_blank" href="https://docs.google.com/spreadsheets/d/10lbPnDYJXhbtlA0ls0cGjjX_osFSG559IDrTbhgPHvc"><span style="color:aqua" style="text-decoration: underline">leaderboard spreadsheet here<></a>.`
-
 let creatorText = 
 `The <g>Creators Leaderboard<> is sorted by <g>creator points<>, rather than stars. A player's <g>creator points<> (CP) is calculated by counting their number of <y>star rated<> levels, plus an extra point for every level that has been <b>featured<>, plus an additional point for <o>epic rated<> levels.`
 
@@ -89,7 +83,7 @@ function infoText(text) {
 	$('#infoText').html(tweaked)
 }
 
-infoText(accurateText)
+infoText(top250Text)
 
 
 function leaderboard() {
@@ -110,17 +104,15 @@ function leaderboard() {
 					style="cursor: help; height: 19%; transform: translate(-25%, -10%);" title="Stars"></h3>
 		
 			<h3 class="lessSpaced leaderboardStats">
-				${x.diamonds} <img class="valign" src="../assets/diamond.png" style="cursor: help" title="Diamonds">
 				${x.coins} <img class="valign" src="../assets/coin.png" style="cursor: help" title="Secret Coins">
-				${x.usercoins} <img class="valign" src="../assets/silvercoin.png" style="cursor: help" title="User Coins">
 				${x.demons} <img class="valign" src="../assets/demon.png" style="cursor: help" title="Demons">
 				${x.cp != 0 ? `${x.cp} <img class="valign" src="../assets/cp.png" style="cursor: help" title="Creator Points">` : ""}
 			</h3>
 		
 			<div class="center"
 				style="position:absolute; top: ${6.5 + (y * 26.572)}%; left: 3.5%; transform:scale(0.82); height: 10%; width: 12.5%;">
-				<img class="spaced lazyLoad" data-src="./icon/${x.username}" height="150%"
-					style="margin-bottom: 0%; transform:scale(1.1)">
+				<!--img class="spaced lazyLoad" data-src="./icon/${x.username}" height="150%"
+					style="margin-bottom: 0%; transform:scale(1.1)"-->
 				<h2 class="small" style="margin-top: 2%">${x.rank}</h2>
 			</div>
 		</div>`)
@@ -136,7 +128,7 @@ function leaderboard() {
 
 }
 
-	let type = "accurate"
+	let type = "top"
 	leaderboard()
 
 	$('#topTabOff').click(function() {
@@ -145,20 +137,8 @@ function leaderboard() {
 		leaderboard()
 		$('.leaderboardTab').hide();
 		$('#topTabOn').show()
-		$('#accurateTabOff').show()
 		$('#creatorTabOff').show()
 		infoText(top250Text)
-	})
-
-	$('#accurateTabOff').click(function() {
-		if (type == "accurate" || loading) return;
-		type = "accurate"
-		leaderboard()
-		$('.leaderboardTab').hide();
-		$('#topTabOff').show()
-		$('#accurateTabOn').show()
-		$('#creatorTabOff').show()
-		infoText(accurateText)
 	})
 
 	$('#creatorTabOff').click(function() {
@@ -167,7 +147,6 @@ function leaderboard() {
 		leaderboard()
 		$('.leaderboardTab').hide();
 		$('#topTabOff').show()
-		$('#accurateTabOff').show()
 		$('#creatorTabOn').show()
 		infoText(creatorText)
 	});

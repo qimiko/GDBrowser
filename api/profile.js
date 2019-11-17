@@ -3,10 +3,11 @@ const fs = require('fs')
 
 module.exports = async (app, req, res, api, getLevels) => {
 
-  request.post('http://boomlings.com/database/getGJUsers20.php', {
+  request.post('https://absolllute.com/gdps/gdapi/incl/profiles/getGJUsers.php', {
     form: {
       str: getLevels || req.params.id,
-      secret: app.secret
+      secret: app.secret,
+      gameVersion: 21,
     }
   }, function (err1, res1, b1) {
     
@@ -17,10 +18,10 @@ module.exports = async (app, req, res, api, getLevels) => {
 
     let gdSearchResult = app.parseResponse(b1)
 
-    request.post('http://boomlings.com/database/getGJUserInfo20.php', {
+    request.post('https://absolllute.com/gdps/gdapi/incl/profiles/getGJUserInfo.php', {
       form: {
         targetAccountID: gdSearchResult[16],
-        secret: app.secret
+        gameVersion: 21,
       }
     }, function (err2, res2, body) {
 

@@ -18,11 +18,11 @@ module.exports = async (app, req, res, api, analyze) => {
 
   if (analyze || req.query.hasOwnProperty("download")) return app.modules.download(app, req, res, api, levelID, analyze)
 
-  request.post('http://boomlings.com/database/getGJLevels21.php', {
+  request.post('https://absolllute.com/gdps/gdapi/getGJLevels19.php', {
   form : { 
-      str : levelID, 
-      secret : app.secret,
-      type: 0
+      str : levelID,
+      type: 0,
+      gameVersion: 21
   }}, async function(err, resp, body) { 
 
     if (err || !body || body == '-1') {
@@ -32,7 +32,7 @@ module.exports = async (app, req, res, api, analyze) => {
 
     let preRes = body.split('#')[0].split('|', 10)
     let author = body.split('#')[1].split('|')[0].split(':')
-    let song = '~' + body.split('#')[2]; 
+    let song = '~' + body.split('#')[2];
     song =  app.parseResponse(song, '~|~')
 
     let levelInfo = app.parseResponse(preRes[0])
@@ -44,13 +44,13 @@ module.exports = async (app, req, res, api, analyze) => {
               authorID: levelInfo[6],
               accountID: author[2] || 0,
               difficulty: difficulty[levelInfo[9]],
-              downloads: levelInfo[10],
-              likes: levelInfo[14],
+              downloads: levelInfo[10] - 300,
+              likes: levelInfo[14] - 100,
               disliked : levelInfo[14] < 0,
               length: length[levelInfo[15]] || "?",
               stars: levelInfo[18],
-              orbs: orbs[levelInfo[18]],
-              diamonds: levelInfo[18] < 2 ? 0 : parseInt(levelInfo[18]) + 2,
+              orbs: 0,
+              diamonds: 0,
               featured: levelInfo[19] > 0,
               epic: levelInfo[42] == 1,
               //uploaded: levelInfo[28] + ' ago',
@@ -69,12 +69,9 @@ module.exports = async (app, req, res, api, analyze) => {
 
         level.cp = (level.stars > 0) + level.featured + level.epic
 
-        if (levelInfo[17] == 1) level.difficulty += ' Demon'
-        if (level.difficulty == "Insane Demon") level.difficulty = "Extreme Demon"
-        else if (level.difficulty == "Harder Demon") level.difficulty = "Insane Demon"    
-        else if (level.difficulty == "Normal Demon") level.difficulty = "Medium Demon"   
+        if (levelInfo[17] == 1) level.difficulty = 'Demon'
         else if (levelInfo[25] == 1) level.difficulty = 'Auto'
-        level.difficultyFace = `${levelInfo[17] != 1 ? level.difficulty.toLowerCase() : `demon-${level.difficulty.toLowerCase().split(' ')[0]}`}${level.epic ? '-epic' : `${level.featured ? '-featured' : ''}`}`
+        level.difficultyFace = `${levelInfo[17] != 1 ? level.difficulty.toLowerCase() : `demon-hard`}${level.epic ? '-epic' : `${level.featured ? '-featured' : ''}`}`
 
          if (song[2]) {
            level.songName = song[2] || "Unknown"
@@ -107,8 +104,8 @@ module.exports = async (app, req, res, api, analyze) => {
       }
 
       //demon list stuff
-      if (level.difficulty == "Extreme Demon") {
-        request.get('https://www.pointercrate.com/api/v1/demons/?name=' + level.name.trim(), async function(err, resp, demonList) {
+      if (level.difficulty == "Demon") {
+        request.get('https://pointercrate.xyze.dev/api/v1/demons/?name=' + level.name.trim(), async function(err, resp, demonList) {
           let demon = JSON.parse(demonList)
           if (demon[0] && demon[0].position <= 150) level.demonList = demon[0].position
           return sendLevel()
