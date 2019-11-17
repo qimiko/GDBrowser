@@ -218,6 +218,7 @@ module.exports = async (app, req, res) => {
         }
       }, function (err2, res2, body2) {
         // next we have to actually get the user lol
+        if (err2 || !body2 || body2 == "-1") return buildIcon()
         const players = body2.split('|');
         currentAccount = players.filter( player => player.includes(`:16:${result[16]}:`));
 
