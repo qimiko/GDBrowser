@@ -6,7 +6,6 @@
     <meta id="meta-desc" property="og:description" content="Analyze a Geometry Dash level and view it's objects, portals, color channels, code, and more!">
 	<meta id="meta-image" name="og:image" itemprop="image" content="https://gdbrowser.com/assets/cp.png">
 	<link href="../css/browser.css" type="text/css" rel="stylesheet">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135255146-3"></script><script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-135255146-3');</script>
 	<link rel="icon" href="../assets/cp.png">
 </head>
 
@@ -93,7 +92,7 @@ let triggerList = Object.keys(res.triggers)
 let orbList = Object.keys(res.orbs)
 let miscList = Object.keys(res.misc)
 let blockList = Object.keys(res.blocks)
-let colorList = Object.keys(res.colors)
+//let colorList = Object.keys(res.colors)
 
 let portals = res.portals.split(", ").map(x => x.split(" "))
 
@@ -138,8 +137,8 @@ appendPortals()
 		else $('#misc').append(`<div class="inline miscDiv"><img height="40%" src='../objects/obj-${x.slice(0, -1)}.png'><h3 style="padding-top: 15%">x${res.misc[x][0]}<br>${res.misc[x][1]}</h3></div>`)
 	})
 
-	let bgCol = res.colors.find(x => x.channel == "BG")
-	let grCol = res.colors.find(x => x.channel == "G")
+	let bgCol = res.settings.bgCol
+	let grCol = res.settings.gCol
 
 	if (!bgCol) bgCol = {r: 40, g: 125, b: 255}
 	else if (bgCol.r < 35 && bgCol.g < 35 && bgCol.b < 35) bgCol = {r: 75, g: 75, b: 75}
@@ -151,12 +150,17 @@ appendPortals()
 	$('#style').append(`<div class="inline styleDiv styleBG" style='background-color: rgb(${grCol.r}, ${grCol.g}, ${grCol.b})'><img height="60%" src='../levelstyle/gr-${res.settings.ground}.png'></div>`)
 	if (res.settings.twoPlayer) $('#style').append(`<div class="inline styleDiv"><img height="60%" src='../levelstyle/mode-2p.png'></div>`)
 
-	colorList.forEach((x, y) => {
-		let c = res.colors[x]
-		$('#colorDiv').append(`${y % 8 == 0 ? "<brr>" : ""}<div class="inline aColor"><div style="background-color: rgba(${c.r}, ${c.g}, ${c.b}, ${c.opacity}); border: 0.4vh solid rgb(${c.r}, ${c.g}, ${c.b})">
-		${c.copiedChannel ? `<h3 class='copiedColor'>C:${c.copiedChannel}</h3>` : c.pColor ? `<h3 class='copiedColor'>P${c.pColor}</h3>` : c.blending ? "<h3 class='blendingDot'>•</h3>" : ""}	
-		${c.opacity != "1" ? `<h3 class='copiedColor'>${c.opacity}%</h3>` : ""}
-		</div><h3 style="padding-top: 7%">${c.channel > 0 ? "Col " + c.channel : c.channel}</h3></div>`)
+	// collist is now manually defined!
+	const colorList = {'Obj': res.settings.objCol, '3DL': res.settings.dlCol, 'Line': res.settings.lCol, 'Col 1': res.settings.col1, 'Col 2': res.settings.col2, 'Col 3': res.settings.col3, 'Col 4':
+	res.settings.col4};
+
+	Object.entries(colorList).forEach((x, y) => {
+		let c = x[1]
+		$('#colorDiv').append(`${y % 8 == 0 ? "<brr>" : ""}<div class="inline aColor"><div style="background-color: rgba(${c.r}, ${c.g}, ${c.b}, 1); border: 0.4vh solid rgb(${c.r}, ${c.g}, ${c.b})">
+		${c.pColor ? `<h3 class='copiedColor'>P${c.pColor}</h3>` : c.blending ? "<h3 class='blendingDot'>•</h3>" : ""}	
+		</div>
+		<h3 style="padding-top: 7%">${x[0] > 0 ? "Col " + x[0] : x[0]}</h3>
+		</div>`)
 	})
 
 	if (colorList.length == 0) $('#colorDiv').append('<h3 style="margin-top: 7vh">Level is too old to get color info!</h3>')

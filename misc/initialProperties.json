@@ -15,6 +15,16 @@
         "kA16": ["fadeOut", "bool"],
         "kA17": ["alternateLine", "number"],
 
+        "kS29": ["bgCol", "color"],
+        "kS30": ["gCol", "color"],
+        "kS31": ["lCol", "color"],
+        "kS32": ["objCol", "color"],
+        "kS33": ["col1", "color"],
+        "kS34": ["col2", "color"],
+        "kS35": ["col3", "color"],
+        "kS36": ["col4", "color"],
+        "kS37": ["dlCol", "color"],
+
         "kS38": ["colors", "colors"]
     },
 

@@ -106,7 +106,21 @@ Object.keys(data[0]).forEach(x => {
     else if (val[1] == "bump") val = Number(property) + 1
     else if (val[1] == "bool") val = property != "0"
 
+    else if (val[1] == "color") {
+        // this is the port to 1.9
+        const color = app.parseResponse(property, "_")
+        let keys = Object.keys(color)
+        let colorObj = {}
+        keys.forEach(k => {
+            if (colorStuff.properties[k]) colorObj[colorStuff.properties[k]] = color[k]
+        })
+        if (colorObj.pColor == "-1") delete colorObj.pColor
+        if (colorObj.blending) colorObj.blending = true
+        val = colorObj
+    }
+
     else if (val[1] == "colors") {
+        // i have to port this to 1.9
         let colorList = property.split("|")
         colorList.forEach((x, y) => {
             color = app.parseResponse(x, "_")
