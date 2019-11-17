@@ -45,17 +45,12 @@ app.use('/css', express.static(__dirname + '/assets/css'));
 app.use('/objects', express.static(__dirname + '/assets/objects', {maxAge: "7d"}));
 app.use('/blocks', express.static(__dirname + '/assets/blocks', {maxAge: "7d"}));
 app.use('/levelstyle', express.static(__dirname + '/assets/initial', {maxAge: "7d"}));
-app.use('/gauntlets', express.static(__dirname + '/assets/gauntlets', {maxAge: "7d"}));
 app.use('/difficulty', express.static(__dirname + '/assets/gdfaces', {maxAge: "7d"}));
 app.use('/iconkitbuttons', express.static(__dirname + '/assets/iconkitbuttons', {maxAge: "7d"}));
 app.use('/gdicon', express.static(__dirname + '/icons/iconkit', {maxAge: "7d"}));
 
 app.get("/api", function(req, res) {
   res.sendFile(__dirname + "/html/api.html")
-})   
-
-app.get("/gauntlets", function(req, res) {
-  res.sendFile(__dirname + "/html/gauntlets.html")
 })   
 
 app.get("/mappacks", function(req, res) {
@@ -116,10 +111,6 @@ app.get("/api/comments/:id", function(req, res) {
 
 app.get("/api/search/:text", function(req, res) {
   app.modules.search(app, req, res, api)
-})   
-
-app.get("/api/leaderboardLevel/:id", function(req, res) {
-  app.modules.leaderboardLevel(app, req, res, api)
 })   
 
 app.get("/api/leaderboard", function(req, res, api) {
