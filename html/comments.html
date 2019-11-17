@@ -158,7 +158,7 @@ fetch(`../api${!history ? window.location.pathname : "/comments/" + lvl.playerID
 		$('#commentBox').append(`
 			<div class="commentBG">
 				<div class="comment">
-					<!--img class="inline" src="../icon/${!history ? x.username : lvl.username}?form=${x.form}" height=21% style="margin-right: 0.8%"-->
+					<img class="inline" src="../icon/${!history ? x.username : lvl.username}" height=21% style="margin-right: 0.8%">
 					<a href=../${x.accountID == "0" ? `search/${x.playerID}?user` : `../profile/${!history ? x.username : lvl.username}`}>
 					<h2 class="inline gdButton ${x.accountID == "0" ? "green unregistered" : ""}">${!history ? x.username : lvl.username}</h2></a>
 					${x.modColor || lvl.moderator == "2" ? `<img class="inline" src="../assets/mod.png" height=18% style="margin-left: 0.6%;">` : ""}
@@ -182,7 +182,7 @@ fetch(`../api${!history ? window.location.pathname : "/comments/" + lvl.playerID
 		$('#commentBox').append(`
 			<div class="commentBG compactBG">
 				<div class="comment compact">
-					<!--img class="inline" src="../icon/${!history ? x.username : lvl.username}?form=${x.form}" height=21% style="margin-right: 0.8%"-->
+					<img class="inline" src="../icon/${!history ? x.username : lvl.username}" height=21% style="margin-right: 0.8%">
 					<a href=../${x.accountID == "0" ? `search/${x.playerID}?user` : `../profile/${!history ? x.username : lvl.username}`}>
 					<h2 class="inline gdButton ${x.accountID == "0" ? "green unregistered" : ""}">${!history ? x.username : lvl.username}</h2></a>
 					${x.modColor || lvl.moderator == "2" ? `<img class="inline" src="../assets/mod.png" height=18% style="margin-left: 0.6%;">` : ""}

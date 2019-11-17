@@ -33,14 +33,17 @@ module.exports = async (app, req, res) => {
 
       if (!account) account = []
 
-      let { form, ind } = forms[req.query.form] || {};
+      reqForms = {0: 'cube', 1: 'ship', 2:'ball', 3:'ufo', 4:'wave'}
+
+      // this messy chain here gets the correct icon no matter what
+      let { form, ind } = forms[reqForms[account[14]]] || {};
       form = form || 'player';
-      ind = ind || 21;
+      ind = 9;
 
       let iconID = req.query.icon || account[ind] || 1;
       let col1 = req.query.col1 || account[10] || 1;
       let col2 = req.query.col2 || account[11] || 3;
-      let outline = req.query.glow || account[28] || "0";
+      let outline = req.query.glow || account[15] || "0";
 
       if (outline == "0") outline = false;
 
@@ -124,145 +127,14 @@ module.exports = async (app, req, res) => {
           recolor(ic, col1)
           ic.composite(glow, (iconSize[0] / 2) - (size[0] / 2) + offset[0], (iconSize[1] / 2) - (size[1] / 2) - offset[1], { mode: Jimp.BLEND_DESTINATION_OVER })
 
-          if (form == "ufo") {
-            ic.contain(iconSize[0], iconSize[1] * 1.1, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER)
-            //ic.contain(iconSize[0], 300, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_BOTTOM)
+          if (form == "ufo" || form == "ship") {
+            ic.contain(iconSize[0], iconSize[1], Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER)
+            //ic.contain(iconSize[0], 600, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_BOTTOM)
             //ic.composite(ufoTop, (iconSize[0] / 2) - (size[0] / 2) + 7, iconSize[1] + topOffset[3] + 30, {mode: Jimp.BLEND_DESTINATION_OVER})
           }
 
-          if (form == "robot" || req.query.form == "cursed") {
-
-            ic.contain(iconSize[0], 300, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_TOP)
-            ic.contain(iconSize[0] + 200, 300, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_TOP)
-
-            await Jimp.read(new Jimp(robotGlow1)).then(rob => {
-              rob.rotate(-45)
-              robotGlow1 = recolor(rob, col2)
-            })
-
-            await Jimp.read(new Jimp(robotGlow2)).then(rob => {
-              rob.rotate(45)
-              robotGlow2 = recolor(rob, col2)
-            })
-
-            await Jimp.read(new Jimp(robotGlow3)).then(rob => {
-              robotGlow3 = recolor(rob, col2)
-            })
-
-            await Jimp.read(new Jimp(robotLeg1)).then(rob => {
-              rob.rotate(-45)
-              recolor(rob, col1)
-              rob.composite(robotGlow1, (robotOffset1[2] - robotOffset1b[2]) + 1, (robotOffset1[3] - robotOffset1b[3]) / 2, { mode: Jimp.BLEND_DESTINATION_OVER })
-              robotLeg1 = rob
-            })
-
-            await Jimp.read(new Jimp(robotLeg2)).then(rob => {
-              rob.rotate(45)
-              recolor(rob, col1)
-              rob.composite(robotGlow2, (robotOffset2[2] - robotOffset2b[2]) / 2, (robotOffset2[3] - robotOffset2b[3]) / 2, { mode: Jimp.BLEND_DESTINATION_OVER })
-              robotLeg2 = rob
-            })
-
-            await Jimp.read(new Jimp(robotLeg2)).then(rob => {
-              robotLeg2b = rob.color([{ apply: 'darken', params: [20] }]).rotate(-5)
-            })
-
-            await Jimp.read(new Jimp(robotLeg3)).then(rob => {
-              recolor(rob, col1)
-              rob.composite(robotGlow3, (robotOffset3[2] - robotOffset3b[2]) / 2 - 2, (robotOffset3[3] - robotOffset3b[3]) / 2, { mode: Jimp.BLEND_DESTINATION_OVER })
-              robotLeg3 = rob
-            })
-
-            await Jimp.read(new Jimp(robotLeg3)).then(rob => {
-              robotLeg3b = rob.color([{ apply: 'darken', params: [10] }])
-            })
-
-            ic.composite(robotLeg2b, 100 + (iconSize[0] / 2) - (robotOffset2[2]) + robotOffset2[0] - 31, (iconSize[1] / 2) - (robotOffset2[3]) - robotOffset2[1] + 73)
-            ic.composite(robotLeg3b, 100 + (iconSize[0] / 2) - (robotOffset3[2]) + robotOffset3[0] + 20, (iconSize[1] / 2) - (robotOffset3[3]) - robotOffset3[1] + 78)
-            ic.composite(robotLeg2, 100 + (iconSize[0] / 2) - (robotOffset2[2]) + robotOffset2[0] - 20, (iconSize[1] / 2) - (robotOffset2[3]) - robotOffset2[1] + 73)
-            ic.composite(robotLeg3, 100 + (iconSize[0] / 2) - (robotOffset3[2]) + robotOffset3[0] + 40, (iconSize[1] / 2) - (robotOffset3[3]) - robotOffset3[1] + 78)
-            ic.composite(robotLeg1, 100 + (iconSize[0] / 2) - (robotOffset1[2]) + robotOffset1[0] - 20, (iconSize[1] / 2) - (robotOffset1[3]) - robotOffset1[1] + 50)
-
-          }
-
-
-          else if (form == "spider") {
-
-            let spiderBody;
-            ic.contain(iconSize[0], 300, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_TOP)
-            ic.contain(iconSize[0] + 200, 300, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_TOP)
-
-            if (iconID == "07") {
-              robotOffset2[2] -= 10
-              robotOffset2[1] += 12
-              robotOffset1b[3] -= 105
-              robotOffset2b[3] -= 150
-              robotOffset2b[2] -= 60
-            }
-
-            if (iconID == "16") {
-              robotOffset1b[3] -= 100
-              robotOffset2b[3] -= 200
-              robotOffset2b[2] -= 30
-            }
-
-            await Jimp.read(new Jimp(robotGlow1)).then(rob => {
-              if (robotGlow1.bitmap.width < 10) robotGlow1.opacity(0)
-              else robotGlow1 = recolor(rob, col2)
-            })
-
-            await Jimp.read(new Jimp(robotGlow2)).then(rob => {
-              robotGlow2 = recolor(rob, col2)
-            })
-
-            await Jimp.read(new Jimp(robotGlow3)).then(rob => {
-              robotGlow3 = recolor(rob, col2)
-            })
-
-            await Jimp.read(new Jimp(robotLeg1)).then(rob => {
-              recolor(rob, col1)
-              rob.composite(robotGlow1, (robotOffset1[2] - robotOffset1b[2]) / 2, (robotOffset1[3] - robotOffset1b[3]) / 4, { mode: Jimp.BLEND_DESTINATION_OVER })
-              robotLeg1 = rob
-            })
-
-            await Jimp.read(new Jimp(robotLeg2)).then(rob => {
-              recolor(rob, col1)
-              rob.composite(robotGlow2, (robotOffset2[2] - robotOffset2b[2]) / 6, (robotOffset2[3] - robotOffset2b[3]) / 6, { mode: Jimp.BLEND_DESTINATION_OVER })
-              rob.rotate(-40)
-              robotLeg2 = rob
-            })
-
-            await Jimp.read(new Jimp(robotLeg1)).then(rob => {
-              robotLeg1b = rob.color([{ apply: 'darken', params: [20] }])
-            })
-
-            await Jimp.read(new Jimp(robotLeg1b)).then(rob => {
-              robotLeg1c = rob.mirror(true, false)
-            })
-
-            await Jimp.read(new Jimp(robotLeg3)).then(rob => {
-              recolor(rob, col1)
-              rob.composite(robotGlow3, (robotOffset3[2] - robotOffset3b[2]) / 2, (robotOffset3[3] - robotOffset3b[3]) / 2, { mode: Jimp.BLEND_DESTINATION_OVER })
-              robotLeg3 = rob
-            })
-
-            await Jimp.read(new Jimp(ic)).then(rob => {
-              spiderBody = rob
-            })
-
-            ic.composite(robotLeg3, 100 + (iconSize[0] / 2) - (robotOffset3[2]) + (robotOffset3[0]), (iconSize[1] / 2) - (robotOffset2[3]) - robotOffset2[1] + 77)
-            ic.composite(robotLeg1b, 100 + (iconSize[0] / 2) - (robotOffset1[2]) + robotOffset1[0] + 35, (iconSize[1] / 2) - (robotOffset1[3]) - robotOffset1[1] + 70)
-            ic.composite(robotLeg1c, 100 + (iconSize[0] / 2) - (robotOffset1[2]) + robotOffset1[0] + 75, (iconSize[1] / 2) - (robotOffset1[3]) - robotOffset1[1] + 70)
-
-            // ^ BELOW
-            ic.composite(spiderBody, 0, 0)
-            // v ABOVE
-            ic.composite(robotLeg2, 100 + (iconSize[0] / 2) - (robotOffset2[2]) + robotOffset2[0] - 60, (iconSize[1] / 2) - (robotOffset2[3]) - robotOffset2[1] + 75)
-            ic.composite(robotLeg1, 100 + (iconSize[0] / 2) - (robotOffset1[2]) + robotOffset1[0] + 7, (iconSize[1] / 2) - (robotOffset1[3]) - robotOffset1[1] + 70)
-          }
-
           if (useExtra) ic.composite(extra, imgOff + (iconSize[0] / 2) - (size2[0] / 2) + offset2[0], (iconSize[1] / 2) - (size2[1] / 2) - offset2[1])
-          if (form != "ufo") ic.autocrop(0.01, false)
+          if (form != "ufo" || form != "ship") ic.autocrop(0.01, false)
           else if (ic.bitmap.height == '300') ic.autocrop(1, false)
 
           let finalSize = [ic.bitmap.width, ic.bitmap.height]
@@ -336,13 +208,20 @@ module.exports = async (app, req, res) => {
       if (err1 || !body1 || body1 == "-1") return buildIcon()
       else result = app.parseResponse(body1);
   
-      request.post('https://absolllute.com/gdps/gdapi/incl/profiles/getGJUserInfo.php', {
+      // since 1.9 is wack icons don't work correctly - so we improvise (just make a cube tbh)
+      // this gets the user entry on the global leaderboard, actually returning an object we can use
+      request.post('https://absolllute.com/gdps/gdapi/getGJScores19.php', {
         form: {
-          targetAccountID: result[16],
+          accountID: result[16],
           gameVersion: 21,
+          type: 'relative',
         }
       }, function (err2, res2, body2) {
-        if (!err2 && body2 && body2 != '-1') return buildIcon(app.parseResponse(body2));
+        // next we have to actually get the user lol
+        const players = body2.split('|');
+        currentAccount = players.filter( player => player.includes(`:16:${result[16]}:`));
+
+        if (!err2 && body2 && body2 != '-1') return buildIcon(app.parseResponse(currentAccount[0]));
         else return buildIcon()
     })
   });
