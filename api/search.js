@@ -75,14 +75,15 @@ module.exports = async (app, req, res) => {
     let authorList = {}
     let songList = {}
     let authors = body.split('#')[1].split('|')
-    let songs = '~' + body.split('#')[2]; songs = songs.split('|~1~:').map(x => app.parseResponse(x + '|~1~', '~|~'))
+    let songs = '~' + body.split('#')[2];
+    songs = songs.split(':~1~|').map(x => app.parseResponse((x.startsWith('~1~|') ? '' : '~1~|') + x, '~|~'))
     songs.forEach(x => {songList[x['~1']] = x['2']})
 
     authors.splice(10, 999)
     authors.forEach(x => {
-      if (x.startsWith('~')) return
-      let arr = x.split(':')
-      authorList[arr[0]] = [arr[1], arr[2]]})
+        if (x.startsWith('~')) return
+        let arr = x.split(':')
+        authorList[arr[0]] = [arr[1], arr[2]]})
 
     let levelArray = preRes.map(x => app.parseResponse(x))
 

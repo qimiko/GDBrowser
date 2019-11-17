@@ -92,9 +92,8 @@ module.exports = async (app, req, res, api, ID, analyze) => {
               }
 
         request.post('https://absolllute.com/gdps/gdapi/getGJSongInfo.php', {
-        form : { 
-        songID : level.customSong, 
-        secret : app.secret
+        form : {
+        songID : level.customSong,
     }}, async function(err, resp, songRes) { 
 
       if (songRes != '-1') {
