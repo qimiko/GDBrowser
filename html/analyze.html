@@ -149,8 +149,6 @@ appendPortals()
 
 	$('#style').append(`<div class="inline styleDiv styleBG" style='background-color: rgb(${bgCol.r}, ${bgCol.g}, ${bgCol.b})'><img height="60%" src='../levelstyle/bg-${res.settings.background}.png'></div>`)
 	$('#style').append(`<div class="inline styleDiv styleBG" style='background-color: rgb(${grCol.r}, ${grCol.g}, ${grCol.b})'><img height="60%" src='../levelstyle/gr-${res.settings.ground}.png'></div>`)
-	$('#style').append(`<div class="inline styleDiv"><img height="55%" src='../levelstyle/font-${res.settings.font}.png'></div>`)
-	$('#style').append(`<div class="inline styleDiv"><img height="60%" src='../levelstyle/line-${res.settings.alternateLine ? 2 : 1}.png'></div>`)
 	if (res.settings.twoPlayer) $('#style').append(`<div class="inline styleDiv"><img height="60%" src='../levelstyle/mode-2p.png'></div>`)
 
 	colorList.forEach((x, y) => {
