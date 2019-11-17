@@ -127,7 +127,7 @@ app.get("/api/leaderboard", function(req, res, api) {
 })   
 
 app.get("/api/mappacks", async function(req, res) {
-  res.send(require('./misc/mapPacks.json'))
+  return res.send(await app.modules.mappack(app, req.query.page));
 })
 
 app.get("/api/credits", function(req, res) {

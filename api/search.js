@@ -2,7 +2,7 @@ const request = require('request')
 const orbs =  [0, 0, 50, 75, 125, 175, 225, 275, 350, 425, 500]
 const difficulty = {0: 'Unrated', 10: 'Easy', 20: 'Normal', 30: 'Hard', 40: 'Harder', 50: 'Insane'}
 const length = ['Tiny', 'Short', 'Medium', 'Long', 'XL']
-const mapPacks = require('../misc/mapPacks.json')
+const mapPackGettin = require('./mappack.js')
 const levels = require('../misc/level.json').music
 
 module.exports = async (app, req, res) => {
@@ -35,8 +35,10 @@ module.exports = async (app, req, res) => {
         gameVersion: '19',
     }
 
-    let foundPack = mapPacks[req.params.text.toLowerCase()]
+    const mapPacks = await mapPackGettin(app);
+    let foundPack = mapPacks[req.params.text];
     if (foundPack) filters.str = `${foundPack[0]},${foundPack[1]},${foundPack[2]}`;
+    if (foundPack.length == 5) filters.str += `,${foundPack[3]};`
 
     if (req.query.gauntlet || req.query.hasOwnProperty("mappack") || req.query.type == "saved") filters.type = 10
 
