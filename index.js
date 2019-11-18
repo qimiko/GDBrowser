@@ -133,14 +133,6 @@ app.get("/assets/sizecheck.js", function(req, res) {
   res.sendFile(__dirname + "/misc/sizecheck.js")
 })  
 
-app.get("/iconkit", function(req, res) {
-  res.sendFile(__dirname + "/html/iconkit.html")
-})
-
-app.get("/icon", function(req, res) {
-  res.redirect('/iconkit')
-})
-
 app.get('/api/icons', function(req, res) {
   res.send(gdicons);
 });

@@ -32,6 +32,8 @@ module.exports = async (app, req, res) => {
   params.accountID = req.body.accountID
   params.userName = req.body.username
 
+  // as for the time being, this won't work cause of sessions
+  // i won't implement for a bit lol
   request.post('https://absolllute.com/gdps/gdapi/uploadGJComment.php', {
     form: params
   }, function (err, resp, body) {

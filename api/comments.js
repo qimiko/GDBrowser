@@ -17,8 +17,7 @@ module.exports = async (app, req, res) => {
 
     request.post(`https://absolllute.com/gdps/gdapi/${path}.php`, {
     form : params}, async function(err, resp, body) { 
-
-      if (err || body == '-1' || !body) return res.send("-1")
+      if (err || body == '-1' || body == '-2' || !body) return res.send("-1")
 
       comments = body.split('|')
       comments = comments.map(x => x.split(':'))
