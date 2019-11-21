@@ -364,6 +364,7 @@ let lvID = 0
 let likeCount, likeImg;
 let likedComments;
 
+/*
 $(document).on('click', '.likeComment', function(cmnt) {
 	commentID = $(this).attr('commentID')
 
@@ -375,7 +376,6 @@ $(document).on('click', '.likeComment', function(cmnt) {
 	likeCount = $(this).parent().find('h3:not(.gold)')
 	$('#likeComment').show()
 })
-
 $('#submitVote').click(function() {
 
 	if (likedComments.includes(commentID)) return $('#likeMessage').text("You've already liked/disliked this comment!");
@@ -397,7 +397,7 @@ $('#submitVote').click(function() {
 		if (!res || res == "-1") {$('.postbutton').show(); return $('#likeMessage').text("The username you provided doesn't exist!")}
 		else accountID = res.accountID
 
-		$.post("../like",  { ID, accountID, password, like: likeType, type: 2, extraID })
+		 $.post("../like",  { ID, accountID, password, like: likeType, type: 2, extraID })
 		.done(x => {
 			let newCount = parseInt(likeCount.text()) + (like ? 1 : -1)
 			likeCount.text(newCount)
@@ -411,10 +411,10 @@ $('#submitVote').click(function() {
 			likedComments.push(commentID)
 			localStorage.setItem('likedComments', JSON.stringify(likedComments))
 		})		
-		.fail(e => {$('.postbutton').show();$('#likeMessage').text(e.responseText.includes("DOCTYPE") ? "Something went wrong..." : e.responseText)})
+		.fail(e => {$('.postbutton').show();$('#likeMessage').text(e.responseText.includes("DOCTYPE") ? "Something went wrong..." : e.responseText)}) 
 	})
 })
-
+*/
 $(window).on('beforeunload ', function() {
 //0 - recent, 1 - top, 2 - recent/compact, 3 - top/compact
 localStorage.setItem('commentPreset', JSON.stringify({
