@@ -85,13 +85,16 @@ function infoText(text) {
 infoText(top250Text)
 
 
-function leaderboard() {
+function leaderboard(val) {
 
 	$('#searchBox').html(`<div style="height: 4.5%"></div>`)
 	$('#loading').show()
 
-	fetch(`../api/leaderboard?count=250&${type}`).then(res => res.json()).then(res => {
+	fetch(`../api/leaderboard?count=250&${val}`).then(res => res.json()).then(res => {
 
+		if (val != type) return;
+
+		$('#searchBox').html(`<div style="height: 4.5%"></div>`)
 		$('.ranking').remove()
 
 		res.forEach((x, y) => {
@@ -126,12 +129,12 @@ function leaderboard() {
 }
 
 	let type = "top"
-	leaderboard()
+	leaderboard(type)
 
 	$('#topTabOff').click(function() {
 		if (type == "top") return;
 		type = "top"
-		leaderboard()
+		leaderboard(type)
 		$('.leaderboardTab').hide();
 		$('#topTabOn').show()
 		$('#creatorTabOff').show()
@@ -141,7 +144,7 @@ function leaderboard() {
 	$('#creatorTabOff').click(function() {
 		if (type == "creator") return;
 		type = "creator"
-		leaderboard()
+		leaderboard(type)
 		$('.leaderboardTab').hide();
 		$('#topTabOff').show()
 		$('#creatorTabOn').show()
