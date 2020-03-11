@@ -1,6 +1,5 @@
 # GDBrowser
 
-<<<<<<< HEAD
 colon makes messy code, so do I
 in any case this is GDBrowser as an incomplete port to the 1.9GDPS. some things work, some things don't and some things aren't possible!
 
