@@ -127,14 +127,15 @@ module.exports = async (app, req, res) => {
           recolor(ic, col1)
           ic.composite(glow, (iconSize[0] / 2) - (size[0] / 2) + offset[0], (iconSize[1] / 2) - (size[1] / 2) - offset[1], { mode: Jimp.BLEND_DESTINATION_OVER })
 
-          if (form == "ufo" || form == "ship") {
-            ic.contain(iconSize[0], iconSize[1], Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER)
-            //ic.contain(iconSize[0], 600, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_BOTTOM)
+          if (form == "ufo") { //ufo top WIP
+            ic.contain(iconSize[0], iconSize[1] * 1.1, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_CENTER)
+            //ic.contain(iconSize[0], 300, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_BOTTOM)
             //ic.composite(ufoTop, (iconSize[0] / 2) - (size[0] / 2) + 7, iconSize[1] + topOffset[3] + 30, {mode: Jimp.BLEND_DESTINATION_OVER})
           }
 
           if (useExtra) ic.composite(extra, imgOff + (iconSize[0] / 2) - (size2[0] / 2) + offset2[0], (iconSize[1] / 2) - (size2[1] / 2) - offset2[1])
-          if (form != "ufo" || form != "ship") ic.autocrop(0.01, false)
+          if (form != "ufo") ic.autocrop(0.01, false)
+          if (form == "swing") ic.resize(120, 111)
           else if (ic.bitmap.height == '300') ic.autocrop(1, false)
 
           let finalSize = [ic.bitmap.width, ic.bitmap.height]
@@ -199,7 +200,7 @@ module.exports = async (app, req, res) => {
 
     if (req.query.hasOwnProperty("noUser") || req.query.hasOwnProperty("nouser") || username == "icon") return buildIcon()
   
-    request.post('https://absolllute.com/gdps/gdapi/incl/profiles/getGJUsers.php', {
+    request.post(app.endpoint + '/incl/profiles/getGJUsers.php', {
       form: {
         str: username,
         gameVersion: 21,
@@ -210,7 +211,7 @@ module.exports = async (app, req, res) => {
   
       // since 1.9 is wack icons don't work correctly - so we improvise (just make a cube tbh)
       // this gets the user entry on the global leaderboard, actually returning an object we can use
-      request.post('https://absolllute.com/gdps/gdapi/getGJScores19.php', {
+      request.post(app.endpoint + 'getGJScores19.php', {
         form: {
           accountID: result[16],
           gameVersion: 21,

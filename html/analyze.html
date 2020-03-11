@@ -18,9 +18,21 @@
 		<img class="spin noSelect" src="../assets/loading.png" height="25%" style="margin-top: 7%">
 	</div>
 
+	<div class="popup" id="colorInfo">
+		<div id="colorStuff" class="brownbox bounce center supercenter" style="height: 60%; width: 90vh">
+		</div>
+	</div>
+
 	<div id="analysisDiv" style="margin-top: 2%; display:none">
 		<h2 id="levelName"></h2>
 		<h3 id="objectCount"></h3>
+
+		<div id="highDetailDiv">
+			<h1 class="topMargin">Low Detail Mode</h1>
+			<div class="transparentBox analysis roundBottom" id="highdetail" style="height: 10%; text-align: left; overflow: hidden; background-color: darkblue;"></div>
+			<h3 style="margin-top: -0.25%" id="hdText"></h3>
+		</div>
+
 		<h1 class="topMargin">Portal order</h1>
 		<div class="transparentBox analysis" id="portals" style="height: 23%"></div>
 		<div>
@@ -39,7 +51,7 @@
 
 		<h1 class="topMargin2" id="orbText">Jump Rings</h1>
 		<div class="transparentBox analysis" id="orbs"></div>
-		
+
 		<h1 class="topMargin2">Block Types</h1>
 		<div class="transparentBox analysis" id="blocks"></div>
 
@@ -88,7 +100,18 @@ fetch(`../api${window.location.pathname}`).then(res => res.json()).then(res => {
 	$('#meta-title').attr('content',  "Analysis of " + res.level.name)
 	$('#meta-desc').attr('content',  `${res.portals.split(",").length}x portals, ${res.orbs.total || 0}x orbs, ${res.triggers.total || 0}x triggers, ${res.misc.glow || 0}x glow...`)
 
+
+let hdPercent = (res.highDetail / res.objects) * 100
+if (res.highDetail == 0 || res.hdPercent == 0) $('#highDetailDiv').hide()
+
+else {
+	let offset = hdPercent < 20 ? 1 : hdPercent < 40 ? 2 : hdPercent < 60 ? 3 : hdPercent < 80 ? 4 : 5
+	$('#highdetail').append(`<div class="inline" style="width:${hdPercent + offset}%; height: 100%; background-color: lime; margin-left: -2.25%"></div>`)
+	$('#hdText').text(`${res.highDetail}/${res.objects} marked high detail • ${+hdPercent.toFixed(1)}% optimized`)
+}
+
 let triggerList = Object.keys(res.triggers)
+let groupList = Object.keys(res.triggerGroups)
 let orbList = Object.keys(res.orbs)
 let miscList = Object.keys(res.misc)
 let blockList = Object.keys(res.blocks)
@@ -122,7 +145,7 @@ appendPortals()
 		if (x == "total") $('#triggerText').text(`Triggers (${res.triggers[x]})`)
 		else $('#triggers').append(`<div class="inline triggerDiv"><img height="50%" src='../objects/trigger-${x}.png'><h3 style="padding-top: 7%">x${res.triggers[x]}</h3></div>`)
 	})
-	
+
 	orbList.forEach(x => {
 		if (x == "total") $('#orbText').text(`Jump Rings (${res.orbs[x]})`)
 		else $('#orbs').append(`<div class="inline orbDiv"><img height="50%" src='../objects/orb-${x}.png'><h3 style="padding-top: 7%">x${res.orbs[x]}</h3></div>`)
@@ -137,6 +160,11 @@ appendPortals()
 		else $('#misc').append(`<div class="inline miscDiv"><img height="40%" src='../objects/obj-${x.slice(0, -1)}.png'><h3 style="padding-top: 15%">x${res.misc[x][0]}<br>${res.misc[x][1]}</h3></div>`)
 	})
 
+	groupList.forEach(x => {
+		if (x == "total") $('#grouptext').text(`Trigger Groups (${res.triggerGroups[x]})`)
+		else $('#groups').append(`<div class="inline groupDiv"><h1 class="groupID">${x.slice(6)}</h1><h3 style="padding-top: 7%">x${res.triggerGroups[x]}</h3></div>`)
+	})
+
 	let bgCol = res.colors.find(x => x.channel == "BG")
 	let grCol = res.colors.find(x => x.channel == "G")
 
@@ -148,14 +176,14 @@ appendPortals()
 
 	$('#style').append(`<div class="inline styleDiv styleBG" style='background-color: rgb(${bgCol.r}, ${bgCol.g}, ${bgCol.b})'><img height="60%" src='../levelstyle/bg-${res.settings.background}.png'></div>`)
 	$('#style').append(`<div class="inline styleDiv styleBG" style='background-color: rgb(${grCol.r}, ${grCol.g}, ${grCol.b})'><img height="60%" src='../levelstyle/gr-${res.settings.ground}.png'></div>`)
-	$('#style').append(`<div class="inline styleDiv"><img height="55%" src='../levelstyle/font-${res.settings.font}.png'></div>`)
-	$('#style').append(`<div class="inline styleDiv"><img height="60%" src='../levelstyle/line-${res.settings.alternateLine ? 2 : 1}.png'></div>`)
 	if (res.settings.twoPlayer) $('#style').append(`<div class="inline styleDiv"><img height="60%" src='../levelstyle/mode-2p.png'></div>`)
 
 	colorList.forEach((x, y) => {
 		let c = res.colors[x]
-		$('#colorDiv').append(`${y % 8 == 0 ? "<brr>" : ""}<div class="inline aColor"><div style="background-color: rgba(${c.r}, ${c.g}, ${c.b}, ${c.opacity}); border: 0.4vh solid rgb(${c.r}, ${c.g}, ${c.b})">
+
+		$('#colorDiv').append(`${y % 8 == 0 ? "<brr>" : ""}<div class="inline aColor"><div class="color" channel="${c.channel}" style="background-color: rgba(${c.cr || c.r}, ${c.cg || c.g}, ${c.cb || c.b}, ${c.opacity}); border: 0.4vh solid rgb(${c.r}, ${c.g}, ${c.b})">
 		${c.copiedChannel ? `<h3 class='copiedColor'>C:${c.copiedChannel}</h3>` : c.pColor ? `<h3 class='copiedColor'>P${c.pColor}</h3>` : c.blending ? "<h3 class='blendingDot'>•</h3>" : ""}	
+		${c.copiedChannel && c.copiedHSV ? `<h3 class='copiedColor copiedHSV'> +HSV</h3>` : ""}
 		${c.opacity != "1" ? `<h3 class='copiedColor'>${c.opacity}%</h3>` : ""}
 		</div><h3 style="padding-top: 7%">${c.channel > 0 ? "Col " + c.channel : c.channel}</h3></div>`)
 	})
@@ -189,6 +217,54 @@ appendPortals()
 	window.setTimeout(function () { //small delay so "loading" message appears
 		$('#levelCode').html(`<p class="codeFont">${res.data}</p>`)}, 50);
 		$('#levelCode').focus().select()
+	})
+
+	$(document).on('click', '.color', function() {
+		let col = res.colors.find(x => x.channel == $(this).attr('channel'))
+		let hsv = col.copiedHSV
+		if (hsv) {
+			hsv.s = Number(hsv.s).toFixed(2)
+			hsv.v = Number(hsv.v).toFixed(2)
+		}
+		let hex = "#" + ((1 << 24) + (+col.r << 16) + (+col.g << 8) + +col.b).toString(16).slice(1)
+		$('#colorStuff').html(`
+		<h2 class="slightlySmaller">${isNaN(col.channel) ? col.channel : "Color " + col.channel}</h2>
+			<div class="colorSection">
+				<h3>Hex Code</h3>
+				<p>${hex}</p>
+			</div>
+			<div class="colorSection">
+				<h3>RGB</h3>
+				<p>${col.r}, ${col.g}, ${col.b}</p>
+			</div>
+			<br>
+			<div class="colorSection2" style="width: 40%; ${col.copiedChannel ? "" : "margin-right:55.4%"}">
+				<div class="colorCheckbox"><h3><input ${col.pColor == 1 ? "checked" : ""} type="checkbox"> <label class="gdcheckbox gdButton"></label>Player 1</h3></div>
+				<div class="colorCheckbox"><h3><input ${col.pColor == 2 ? "checked" : ""} type="checkbox"> <label class="gdcheckbox gdButton"></label>Player 2</h3></div>
+				<div class="colorCheckbox"><h3><input ${col.blending ? "checked" : ""} type="checkbox"> <label class="gdcheckbox gdButton"></label>Blending</h3></div>
+			</div>
+			${col.copiedChannel ? `
+			<div class="colorSection2">
+				<div class="colorSection copyDetails">
+					<h3>Copied</h3>
+					<p>${isNaN(col.copiedChannel) ? col.copiedChannel : "Col " + col.copiedChannel}</p>
+				</div>
+				<div class="colorSection copyDetails">
+					<h3>Hue</h3>
+					<p>${!hsv ? 0 : hsv.h > 0 ? "+" + hsv.h : hsv.h}</p>
+				</div>
+				<div class="colorSection copyDetails">
+					<h3>Saturation</h3>
+					<p>${!hsv ? "x1.00" : !hsv['s-checked'] ? "x" + hsv.s : hsv.s > 0 ? "+" + hsv.s : hsv.s}</p>
+				</div>
+				<div class="colorSection copyDetails">
+					<h3>Brightness</h3>
+					<p>${!hsv ? "x1.00" : !hsv['v-checked'] ? "x" + hsv.v : hsv.v > 0 ? "+" + hsv.v : hsv.v}</p>
+				</div>
+			</div>`
+			: `<div class="colorBox" style="background-color: rgba(${col.r}, ${col.g}, ${col.b}, ${col.opacity}); border-color: ${hex}"></div>`}
+			<br><img src="../assets/ok.png" width=14%; style="margin-top: 18%" class="gdButton center" onclick="$('.popup').hide()">`)
+	$('#colorInfo').show()
 	})
 
 	$('#loadingDiv').hide()

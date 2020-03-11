@@ -1,5 +1,5 @@
 const request = require('request')
-const XOR = require('../misc/XOR.js');
+const XOR = require('../../classes/XOR.js');
 const xor = new XOR();
 const crypto = require('crypto')
 function sha1(data) { return crypto.createHash("sha1").update(data, "binary").digest("hex"); }
@@ -14,8 +14,8 @@ module.exports = async (app, req, res) => {
   if (!req.body.extraID) return res.status(400).send("No extra ID provided! (this should be a level ID, account ID, or '0' for levels")
   
   let params = {
-    gameVersion: '21',
-    binaryVersion: '35',
+    gameVersion: app.gameVersion,
+    binaryVersion: app.binaryVersion,
     secret: app.secret,
     udid: '0',
     uuid: '0',
@@ -35,7 +35,7 @@ module.exports = async (app, req, res) => {
 
   params.chk = chk
 
-  request.post('http://boomlings.com/database/likeGJItem211.php', {
+  request.post(app.endpoint + 'likeGJItem211.php', {
     form: params
   }, function (err, resp, body) {
     if (err) return res.status(400).send("The Geometry Dash servers returned an error! Perhaps they're down for maintenance")

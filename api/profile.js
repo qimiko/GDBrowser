@@ -3,7 +3,7 @@ const fs = require('fs')
 
 module.exports = async (app, req, res, api, getLevels) => {
 
-  request.post('https://absolllute.com/gdps/gdapi/incl/profiles/getGJUsers.php', {
+  request.post(app.endpoint + '/incl/profiles/getGJUsers.php', {
     form: {
       str: getLevels || req.params.id,
       secret: app.secret,
@@ -11,17 +11,12 @@ module.exports = async (app, req, res, api, getLevels) => {
     }
   }, function (err1, res1, b1) {
     
-    if (err1 || b1 == '-1' || !b1) {
-      if (!api) return res.redirect('/search/' + req.params.id)
-      else return res.send("-1")
-    }
+    let searchResult = (err1 || b1 == '-1' || !b1) ? req.params.id : app.parseResponse(b1)[16]
 
-    let gdSearchResult = app.parseResponse(b1)
-
-    request.post('https://absolllute.com/gdps/gdapi/incl/profiles/getGJUserInfo.php', {
+    request.post(app.endpoint + '/incl/profiles/getGJUserInfo.php', {
       form: {
-        targetAccountID: gdSearchResult[16],
-        gameVersion: 21,
+        targetAccountID: searchResult,
+        secret: app.secret
       }
     }, function (err2, res2, body) {
 
@@ -65,7 +60,7 @@ module.exports = async (app, req, res, api, getLevels) => {
    
       if (getLevels) {
           req.params.text = account[2]
-          return app.modules.search(app, req, res)
+          return app.run.search(app, req, res)
       }
 
       else if (api) return res.send(userData)

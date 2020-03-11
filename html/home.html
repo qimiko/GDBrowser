@@ -30,21 +30,21 @@
 	<div class="supercenter center" id="menuButtons" style="bottom: 5%;">
 			<table>
 				<tr>
+					<td><a href="./search/levels?type=saved"><img class="menubutton" src="../assets/category-saved.png"></a></td>
+					<td><a href="./leaderboard"><img class="menubutton" src="../assets/category-scores.png"></a></td>
+					<td><a href="./search"><img class="menubutton" src="../assets/category-search.png"></a></td>
+				</tr>
+				<tr>
 					<td><a href="./search/levels?type=featured"><img class="menubutton" src="../assets/category-featured.png"></a></td>
 					<td><a href="./search/levels?type=hof"><img class="menubutton" src="../assets/category-hof.png"></a></td>
 					<td><a href="./mappacks"><img class="menubutton" src="../assets/category-packs.png"></a></td>
 				</tr>
-					<tr>
-						<td><a href="./search/levels?type=saved"><img class="menubutton" src="../assets/category-saved.png"></a></td>
-						<td><a href="./leaderboard"><img class="menubutton" src="../assets/category-scores.png"></a></td>
-						<td><a href="./search"><img class="menubutton" src="../assets/category-search.png"></a></td>
-					</tr>
 			</table>
 
 			<p>Website created by GD Colon, 1.9 port by zmx.<br>Pretty much everything other than that belongs to RobTopGames.</p>
 			<p style="margin-top: -0.5%">
 				<a class="menuLink" href="./api">API</a>
-				&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+				&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 				<a class="menuLink" href="https://github.com/zmxhawrhbg/GDBrowser">GitHub</a>
 				&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 				<a class="menuLink" href="https://store.steampowered.com/app/322170/Geometry_Dash/">Buy Geometry Dash!</a>
@@ -56,7 +56,7 @@
 	</div>
 
 
-	
+
 </div>
 
 </body>
@@ -100,8 +100,8 @@ fetch(`./api/credits`).then(res => res.json()).then(res => {
 
 	res.specialThanks.forEach((x, y) => {
 		$('#specialthanks').append(`<div class="specialThanks">
-				<h2 class="gdButton smaller"><a href="./profile/${x[1]}">${x[0]}</h2></a>
-				<img src="./icon/${x[1]}" height=85%><br>
+				<h2 class="gdButton smaller"><a href="./profile/${x}">${x}</h2></a>
+				<img src="./icon/${x}" height=85%><br>
 				</div>`)
 	})
 
@@ -115,11 +115,11 @@ fetch(`./api/credits`).then(res => res.json()).then(res => {
     if (k.which == 37 && page > 1) { //left
 		page -= 1; loadCredits();
 	}
-	
+
 	if (k.which == 39 && page < res.credits.length + 1) { //right
 		page += 1; loadCredits();
 	}
-	
+
 });
 });
 

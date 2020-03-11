@@ -41,14 +41,16 @@
 				<div class="header-category">
 					<div class="category-name">Account</div>
 					<div class="category-content">
-							<a class="header-link" href="#commenting">Commenting</a> 
+						<a class="header-link" href="#commenting">Commenting</a> 
+						<a class="header-link" href="#profileposting">Profile Posting</a> 
 						<a class="header-link" href="#liking">Liking</a> 
+						<a class="header-link" href="#messages">Messages</a> 
 					</div>
 				</div>
 				<div class="header-category">
 					<div class="category-name">Misc</div>
 					<div class="category-content">
-							<a class="header-link" href="#analyze">Level Analysis</a> 
+						<a class="header-link" href="#analyze">Level Analysis</a> 
 						<a class="header-link" href="#icons">Icons</a> 
 					</div>
 				</div>
@@ -56,7 +58,7 @@
 		</div>
 	</div>
 	<div id="intro" class="anchor"></div>
-	<main class="grey">
+	<main>
 		<div class="main-block">
 			<h1>Hi there!</h1>
 			<p>This is the documentation for the
@@ -78,8 +80,10 @@
 				<p><a href="#levelleaderboard"><u>Level Leaderboards</u></a> <i>/api/leaderboardLevel/levelID</i></p>
 				<p><a href="#comments"><u>Comments & Posts</u></a> <i>/api/comments/level-or-user-ID</i></p>
 				<p><a href="#analyze"><u>Level Analysis</u></a> <i>/api/analyze/levelID</i></p>
-				<p><a href="#commenting"><u>Commenting</u></a> <i>/api/postComment (POST)</i></p>
-				<p><a href="#liking"><u>Liking</u></a> <i>/api/like (POST)</i></p>
+				<p><a href="#commenting"><u>Commenting</u></a> <i>/postComment (POST)</i></p>
+				<p><a href="#profileposting"><u>Profile Posting</u></a> <i>/postProfileComment (POST)</i></p>
+				<p><a href="#messages"><u>Messages</u></a> <i>/messages (4 different POSTs)</i></p>
+				<p><a href="#liking"><u>Liking</u></a> <i>/like (POST)</i></p>
 				<p><a href="#icons"><u>Icons</u></a> <i>/icon/username</i></p>
 			</quote>
 			<br>
@@ -90,7 +94,7 @@
 
 		<div class="seperator"></div>
 	</main>
-	<main class="alt">
+	<main>
 		<div id="level" class="anchor"></div>
 		<div class="main-block">
 			<h1>Levels</h1>
@@ -128,6 +132,7 @@
 				<p>diamonds: Amount of diamonds received for beating the level (stars + 2)</p>
 				<p>featured: Whether the level is featured or not</p>
 				<p>epic: Whether the level has an "epic" rating or not</p>
+				<p>gameVersion: The version of GD the level was released on (1.9, 2.1, etc)</p>
 				<p>version: Number of times the level was updated</p>
 				<p>copiedID: The original level ID, if the level was copied. Otherwise returns 0</p>
 				<p>officialSong: The level number of the song, if no custom song is used. Otherwise returns 0</p>
@@ -168,7 +173,7 @@
 
 
 	</main>
-	<main class="grey">
+	<main>
 
 		<div id="profile" class="anchor"></div>
 		
@@ -225,7 +230,7 @@
 
 
 	</main>
-	<main class="alt">
+	<main>
 
 		<div id="search" class="anchor"></div>
 		
@@ -286,6 +291,7 @@
 			<p class="reveal" onclick="$('#response-search').slideToggle(100)"><b>Response*</b></p>
 			<div class="subdiv" id="response-search">
 				<p>The response for searching is an array of up to 10 <a href="#level">level objects</a></p>
+				<p>If the page is set to 0, the first level object will also display the number of pages and search results.<br>Since RobTop is a ploopy this only works on the first page, and may sometimes just display 9999 results.</p>
 			</div>
 			<br>
 			<p class="reveal" onclick="$('#request-search').slideToggle(100)"><b>Examples</b></p>
@@ -308,7 +314,7 @@
 
 
 	</main>
-	<main class="grey">
+	<main>
 		<div id="leaderboard" class="anchor"></div>
 		<div class="main-block">
 			<h1>Leaderboards</h1>
@@ -359,7 +365,7 @@
 		<div class="seperator"></div>
 
 	</main>
-	<main class="alt">
+	<main>
 		<div id="levelleaderboard" class="anchor"></div>
 		<div class="main-block">
 			<h1>Level Leaderboards</h1>
@@ -404,7 +410,7 @@
 		<div class="seperator"></div>
 
 	</main>
-	<main class="grey">
+	<main>
 		<div id="comments" class="anchor"></div>
 		<div class="main-block">
 			<h1>Comments and Profile Posts</h1>
@@ -430,13 +436,14 @@
 				<p>ID: The ID of the comment (used for liking and deleting)</p>
 				<p>likes: The number of likes the comment has</p>
 				<p>date: Time since the comment was posted (sent as "x days/weeks/months" ago, since it's all the API sends)</p>
-				<p class="red">levelID: The ID of the level [COMMENT HISTORY ONLY]</p>
+				<p>levelID: The ID of the level</p>
+				<p>browserColor: If the comment was posted through GDBrowser</p>
 				<p class="red">username: The commenter's username</p>
 				<p class="red">playerID: The commenter's ID</p>
 				<p class="red">accountID: The commenter's account ID</p>
 				<p class="red">form: The form of the commenter's icon</p>
 				<p class="red">percent: The commenter's percent on the level, if provided</p>
-				<p class="red">modColor: If the commenter is an elder mod and gets fancy green text</p>
+				<p class="red">moderator: If type of moderator the commenter is. Returns 0 (none), 1 (mod) or 2 (elder, green text)</p></p>
 			</div>
 
 			<br>
@@ -457,7 +464,7 @@
 		<div class="seperator"></div>
 	</main>
 	
-	<main class="alt">
+	<main>
 		<div id="analyze" class="anchor"></div>
 		<div class="main-block">
 			<h1>Level Analysis</h1>
@@ -473,7 +480,7 @@
 			</div>
 
 			<br>
-			<p class="reveal" onclick="$('#response-analyze').slideToggle(100)"><b>Response (10)</b></p>
+			<p class="reveal" onclick="$('#response-analyze').slideToggle(100)"><b>Response (12)</b></p>
 			<div class="subdiv" id="response-analyze">
 				<p><b>Response is subject to change in the future</b></p>
 				<p>The API will return an array of each player with the following information:</p>
@@ -483,6 +490,7 @@
 				<p>orbs: How many of each jump ring is in the level</p>
 				<p>triggers: How many of each trigger is in the level</p>
 				<p>blocks: How many of each block type is in the level</p>
+				<p>triggerGroups: How many of each group ID is in the level</p>
 				<p>misc: Amount of objects that aren't categorized above (glow, arrows, clouds, pickups, etc)</p>
 				<p>colors: The level's initial color channels. Contains channel, R, G, B, opacity, player color, blending, and copied channel</p>
 				<p>text: An array of all the text objects in a level. ([text, percent])</p>
@@ -497,14 +505,14 @@
 
 	</main>
 
-	<main class="grey">
+	<main>
 			<div id="commenting" class="anchor"></div>
 			<div class="main-block">
 				<h1>Commenting</h1>
-				<p>POST: /api/postComment</p>
+				<p>POST: /postComment</p>
 	
 				<p>Leaves a comment on a level. This one is a POST request!</p>
-				<p>*Commenting has a rate limit of 10 seconds</p>
+				<p>*Commenting has a rate limit of 15 seconds</p>
 	
 				<br>
 				<p class="reveal" onclick="$('#params-commenting').slideToggle(100)"><b>Parameters (6)</b></p>
@@ -515,14 +523,15 @@
 					<p>password: Your password (as plain text)</p>
 					<p>levelID: The ID of the level to comment on</p>
 					<p>percent: The percent shown on the comment (optional)</p>
+					<p>color: If the comment should have a special pink color on GDBrowser (optional)</p>
 				</div>
 	
 				<br>
 
 				<p class="reveal" onclick="$('#request-commenting').slideToggle(100)"><b>Example</b></p>
 				<div class="subdiv" id="request-commenting">
-					<p><b>Example Requests</b></p>
-					<p>POST /api/postComment<br>
+					<p><b>Example Request</b></p>
+					<p>POST /postComment<br>
 						?comment=This is a nifty comment!<br>
 						&username=colon<br>
 						&accountID=106255<br>
@@ -537,12 +546,48 @@
 			<div class="seperator"></div>
 		</main>
 
+		<main>
+			<div id="profileposting" class="anchor"></div>
+			<div class="main-block">
+				<h1>Profile Posting</h1>
+				<p>POST: /postProfileComment</p>
+	
+				<p>Leaves a profile post. This one is a POST request!</p>
+	
+				<br>
+				<p class="reveal" onclick="$('#params-profileposting').slideToggle(100)"><b>Parameters (5)</b></p>
+				<div class="subdiv" id="params-profileposting">
+					<p>comment: The content of the profile post</p>
+					<p>username: Your username</p>
+					<p>accountID: Your account ID</p>
+					<p>password: Your password (as plain text)</p>
+					<p>color: If the comment should have a special pink color on GDBrowser (optional)</p>
+				</div>
+	
+				<br>
 
-		<main class="alt">
+				<p class="reveal" onclick="$('#request-profileposting').slideToggle(100)"><b>Example</b></p>
+				<div class="subdiv" id="request-profileposting">
+					<p><b>Example Requests</b></p>
+					<p>POST /postProfileComment<br>
+						?comment=Update 2.0 is revolution!<br>
+						&username=viprin<br>
+						&accountID=2795<br>
+						&password=CopyAndPasteTurnsMeOn<br>
+					<br>
+					<p>If a status of 200 is returned, then the profile post was successfully posted. Otherwise, a 400 will return with an error message.</p>
+				</div>
+	
+			</div>
+			<div class="seperator"></div>
+		</main>
+
+
+		<main>
 			<div id="liking" class="anchor"></div>
 			<div class="main-block">
 				<h1>Liking</h1>
-				<p>POST: /api/like</p>
+				<p>POST: /like</p>
 	
 				<p>Likes/dislikes level, comment, or post. This one is a POST request!</p>
 	
@@ -561,9 +606,9 @@
 
 				<p class="reveal" onclick="$('#request-liking').slideToggle(100)"><b>Example</b></p>
 				<div class="subdiv" id="request-liking">
-					<p><b>Example Requests</b></p>
+					<p><b>Example Request</b></p>
 					<p>Drop a like on RobTop's popular "can you handle the kappa" comment:</p>
-					<p>POST /api/like<br>
+					<p>POST /like<br>
 						?id=42602304 (ID of the comment)<br>
 						&like=1 (thumbs up)<br>
 						&type=2 (liking a comment)<br>
@@ -575,6 +620,81 @@
 						Liking a comment multiple times on the same account will return a 200, but not actually increase the in-game like counter.</p>
 				</div>
 	
+			</div>
+			<div class="seperator"></div>
+		</main>
+
+		<main>
+			<div id="messages" class="anchor"></div>
+			<div class="main-block">
+				<h1>Messages</h1>
+				<p>POST:<br>
+				<b>/messages</b> (fetches messages, includes subject but not actual content. blame robtop)<br>
+				<b>/messages/messageID</b> (reads a message)<br>
+				<b>/deleteMessage</b> (deletes a message)<br>
+				<b>/sendMessage</b> (sends a message)</p>
+
+				<p>I decided to put all 4 of these requests in one section because they're fairly similar ¯\_(ツ)_/¯</p>
+	
+				<br>
+				<p class="reveal" onclick="$('#params-msg').slideToggle(100)"><b>Parameters</b></p>
+				<div class="subdiv" id="params-msg">
+					<p><b>All:</b></p>
+					<p>accountID: Your account ID</p>
+					<p>password: Your password (as plain text)</p>
+
+					<br><p><b>/messages:</b></p>
+					<p>page: The page of the search</p>
+					<p>sent: Set to 1 or true to fetch your sent messages</p>
+					<p>count: Set to 1 or true to fetch your number of unread messages</p>
+
+					<br><p><b>/deleteMessage:</b></p>
+					<p>id: The ID of the message to delete, or an array of multiple IDs</p>
+
+					<br><p><b>/sendMessage:</b></p>
+					<p>targetID: The account ID of the message recipient</p>
+					<p>subject: The subject of the message, max 50 characters</p>
+					<p>message: The content of the message, max 300 characters</p>
+					<p>color: If the message should have a special pink color on GDBrowser (optional)</p>
+				</div>
+	
+				<br>
+
+				<p class="reveal" onclick="$('#request-msg').slideToggle(100)"><b>Example</b></p>
+				<div class="subdiv" id="request-msg">
+					<p><b>Example Request</b></p>
+					<p>Fetch your messages:</p>
+					<p>POST /messages<br>
+						?page=0<br>
+						&accountID=106255<br>
+						&password=KitsuneColon333<br>
+					<br>
+					
+					<p>Read message with ID of 177013:</p>
+					<p>POST /messages/177013<br>
+						?accountID=106255<br>
+						&password=KitsuneColon333<br>
+					<br>
+
+					<p>Delete message with ID of 177013:</p>
+					<p>POST /deleteMessage<br>
+						?accountID=106255<br>
+						&id=177013<br>
+						&password=KitsuneColon333<br>
+					<br>
+					
+					<p>Send "Hello!" to Tubular9:</p>
+					<p>POST /sendMessage<br>
+						?accountID=106255<br>
+						&password=KitsuneColon333<br>
+						&subject=Message for you<br>
+						&message=Hello!<br>
+						&targetID=10760804 (Account ID of Tubular9)<br>
+					<br>
+
+					<p>A status of 200 will return if everything goes well, otherwise a 400 will return with an error message.<br>
+						Deleting a message ID that doesn't exist will still return a 200 but won't do anything.</p>
+				</div>
 			</div>
 			<div class="seperator"></div>
 		</main>

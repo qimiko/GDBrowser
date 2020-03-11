@@ -4,6 +4,7 @@ const difficulty = {0: 'Unrated', 10: 'Easy', 20: 'Normal', 30: 'Hard', 40: 'Har
 const length = ['Tiny', 'Short', 'Medium', 'Long', 'XL']
 const mapPackGettin = require('./mappack.js')
 const levels = require('../misc/level.json').music
+const Level = require('../classes/Level.js')
 
 module.exports = async (app, req, res) => {
 
@@ -13,7 +14,7 @@ module.exports = async (app, req, res) => {
       if (count > 10) amount = 10
       else amount = count;
     }
-    
+
     let filters = {
         str: req.params.text,
 
@@ -29,12 +30,16 @@ module.exports = async (app, req, res) => {
         noStar: req.query.hasOwnProperty("noStar") ? 1 : 0,
         customSong: req.query.hasOwnProperty("customSong") ? 1 : 0,
         type: req.query.type || 0,
-        gameVersion: '19',
+        gameVersion: 19,
+        binaryVersion: app.binaryVersion,
+        secret: app.secret
     }
+
+    let foundPack = false;
 
     if (req.query.mappack) {
         const mapPacks = await mapPackGettin(app);
-        let foundPack = mapPacks[req.params.text];
+        foundPack = mapPacks[req.params.text];
         if (foundPack) filters.str = `${foundPack[0]},${foundPack[1]},${foundPack[2]}`;
         if (foundPack.length == 5) filters.str += `,${foundPack[3]};`
     }
@@ -59,19 +64,21 @@ module.exports = async (app, req, res) => {
 
     if (req.query.hasOwnProperty("user")) {
         filters.type = 5
-        if (!req.params.text.match(/^[0-9]*$/)) return app.modules.profile(app, req, res, null, req.params.text)
+        if (!req.params.text.match(/^[0-9]*$/)) return app.run.profile(app, req, res, null, req.params.text)
     } 
 
     if (req.params.text == "*") delete filters.str
 
-    request.post('https://absolllute.com/gdps/gdapi/getGJLevels19.php', {
-    form : filters}, async function(err, resp, body) {
 
-    if (err || !body || body == '-1' || body == '###10:10:10#-1') return res.send("-1")
-    let preRes = body.split('#')[0].split('|', 10)
+    request.post(app.endpoint + 'getGJLevels19.php', {
+    form : filters}, async function(err, resp, body) {
+        
+    if (err || !body || body == '-1') return res.send("-1")
+    let splitBody = body.split('#')
+    let preRes = splitBody[0].split('|', 10)
     let authorList = {}
     let songList = {}
-    let authors = body.split('#')[1].split('|')
+    let authors = splitBody[1].split('|')
     let songs = '~' + body.split('#')[2];
     songs = songs.split(':~1~|').map(x => app.parseResponse((x.startsWith('~1~|') ? '' : '~1~|') + x, '~|~'))
     songs.forEach(x => {songList[x['~1']] = x['2']})
@@ -82,62 +89,48 @@ module.exports = async (app, req, res) => {
         let arr = x.split(':')
         authorList[arr[0]] = [arr[1], arr[2]]})
 
-    let levelArray = preRes.map(x => app.parseResponse(x))
+    let levelArray = preRes.map(x => app.parseResponse(x)).filter(x => x[1])
+    let parsedLevels = []
 
     await levelArray.forEach(async (x, y) => {
-        let keys = Object.keys(x)
-        x.name = x[2];
-        x.id = x[1];
-        x.description = Buffer.from(x[3], 'base64').toString() || "(No description provided)",
-        x.author = authorList[x[6]] ? authorList[x[6]][0] : "-";
-        x.authorID = x[6];
-        x.accountID = authorList[x[6]] ? authorList[x[6]][1] : "0";
-        x.difficulty = difficulty[x[9]];
-        x.downloads = x[10] - 300;
-        x.likes = x[14] - 100;
-        x.disliked = x[14] < 0;
-        x.length = length[x[15]] || "?";
-        x.stars = x[18];
-        x.orbs = orbs[x[18]];
-        x.diamonds = x[18] < 2 ? 0 : parseInt(x[18]) + 2,
-        x.featured = x[19] > 0;
-        x.epic = x[42] == 1;
-        x.version = x[5];
-        x.copiedID = x[30];
-        x.officialSong = x[12] != 0 ? parseInt(x[12]) + 1 : 0;
-        x.customSong = x[35];
-        x.coins = x[37];
-        x.verifiedCoins = x[38] == 1;
-        x.starsRequested = x[39];
-        x.objects = x[45];
-        x.large = x[45] > 40000;
-        x.cp = (x.stars > 0) + x.featured + x.epic;
 
-        if (x[17] == 1) x.difficulty += 'Demon'
-        else if (x[25] == 1) x.difficulty = 'Auto'
-        x.difficultyFace = `${x[17] != 1 ? x.difficulty.toLowerCase() : `demon-hard`}${x.epic ? '-epic' : `${x.featured ? '-featured' : ''}`}`
-
+        let level = new Level(x)
         let songSearch = songs.find(y => y['~1'] == x[35])
 
+        level.author = authorList[x[6]] ? authorList[x[6]][0] : "-";
+        level.accountID = authorList[x[6]] ? authorList[x[6]][1] : "0";
+
         if (songSearch) {
-            x.songName = app.clean(songSearch[2] || "Unknown")
-            x.songAuthor = songSearch[4] || "Unknown"
-            x.songSize = (songSearch[5] || "0") + "MB"
-            x.songID = songSearch[1] || x.customSong
+            level.songName = app.clean(songSearch[2] || "Unknown")
+            level.songAuthor = songSearch[4] || "Unknown"
+            level.songSize = (songSearch[5] || "0") + "MB"
+            level.songID = songSearch[1] || level.customSong
         }
    
         else {
             let foundSong = require('../misc/level.json').music[parseInt(x[12]) + 1] || {"null": true}
-            x.songName =  foundSong[0] || "Unknown"
-            x.songAuthor = foundSong[1] || "Unknown"
-            x.songSize = "0MB"
-            x.songID = "Level " + [parseInt(x[12]) + 1]
-         }
+            level.songName =  foundSong[0] || "Unknown"
+            level.songAuthor = foundSong[1] || "Unknown"
+            level.songSize = "0MB"
+            level.songID = "Level " + [parseInt(x[12]) + 1]
+        }
 
-        keys.forEach(k => delete x[k])
+        //this is broken if you're not on page 0, blame robtop
+        if (filters.page == 0 && y == 0) {
+            let pages = splitBody[3].split(":");
+            level.results = +pages[0];
+            level.pages = +Math.ceil(pages[0] / 10);
+
+            if (filters.gauntlet || foundPack) {
+                level.results = levelArray.length 
+                level.pages = 1
+            }
+        }
+
+        parsedLevels[y] = level
     })
 
-    return res.send(levelArray.slice(0, amount))
+    return res.send(parsedLevels.slice(0, amount))
 
     })
 }

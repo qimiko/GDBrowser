@@ -11,11 +11,13 @@ module.exports = async (app, req, res) => {
 
     let params = {
       count: amount,
+      gameVersion: app.gameVersion,
+      binaryVersion: app.binaryVersion,
       secret: app.secret,
       type: (req.query.hasOwnProperty("creator") || req.query.hasOwnProperty("creators")) ? "creators" : "top",
     }  
 
-    request.post('https://absolllute.com/gdps/gdapi/getGJScores19.php', {
+    request.post(app.endpoint + 'getGJScores19.php', {
     form : params}, async function(err, resp, body) { 
 
       if (err || body == '-1' || !body) return res.send("-1")

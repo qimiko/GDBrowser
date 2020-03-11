@@ -130,6 +130,8 @@ if (mode == "top") {
 	$('#topSort').attr('src', "../assets/sort-likes-on.png")
 }
 
+function clean(text) {if (!text || typeof text != "string") return text; else return text.replace(/&/g, "&#38;").replace(/</g, "&#60;").replace(/>/g, "&#62;").replace(/=/g, "&#61;").replace(/"/g, "&#34;").replace(/'/g, "&#39;")}
+
 $('#compactMode').attr('src', `../assets/compact-${compact ? "on" : "off"}.png`)
 
 let target = `../api/level/${lvlID}`
@@ -196,21 +198,25 @@ fetch(`../api${!history ? window.location.pathname : "/comments/" + lvl.playerID
 	}
 
 	res.forEach(x => {
-		
+
+		let userName = !history ? x.username : lvl.username
+		let userLink = encodeURI(userName)
+		let modNumber = x.moderator || lvl.moderator
+
 		if (!compact) {
 		////// NORMAL MODE //////
 
 		$('#commentBox').append(`
 			<div class="commentBG">
 				<div class="comment">
-					<img class="inline" src="../icon/${!history ? x.username : lvl.username}" height=21% style="margin-right: 0.8%">
-					<a href=../${x.accountID == "0" ? `search/${x.playerID}?user` : `../profile/${!history ? x.username : lvl.username}`}>
-					<h2 class="inline gdButton ${x.accountID == "0" ? "green unregistered" : ""}">${!history ? x.username : lvl.username}</h2></a>
-					${x.modColor || lvl.moderator == "2" ? `<img class="inline" src="../assets/mod.png" height=18% style="margin-left: 0.6%;">` : ""}
+					<img class="inline" src="../icon/${userLink}?form=${x.form}" height=21% style="margin-right: 0.8%">
+					<a href=../${x.accountID == "0" ? `search/${x.playerID}?user` : `../profile/${userLink}`}>
+					<h2 class="inline gdButton ${x.accountID == "0" ? "green unregistered" : ""}">${userName}</h2></a>
+					${modNumber > 0 ? `<img class="inline" src="../assets/mod.png" height=18% style="margin-left: 0.6%;">` : ""}
 					<p class="commentPercent inline">${x.percent ? x.percent + "%" : ""}</p>
 
 					<div class="commentAlign">
-						<p class="commentText" style="color: ${!history && x.playerID == lvl.authorID ? "rgb(255, 255, 75)" : x.playerID == "16" ? "rgb(50, 255, 255)" : x.modColor || lvl.moderator == "2" ? `rgb(75, 255, 75)` : "white"}">${x.content}</p>
+						<p class="commentText" style="color: rgb(${!history && x.playerID == lvl.authorID ? "255, 255, 75" : x.playerID == "16" ? "50, 255, 255" : modNumber == 2 ? "75, 255, 75" : x.browserColor ? "255, 180, 255" : "255, 255, 255"})">${clean(x.content)}</p>
 					</div>
 				</div>
 				<p class="commentDate">${x.date}</p>
@@ -229,14 +235,14 @@ fetch(`../api${!history ? window.location.pathname : "/comments/" + lvl.playerID
 		$('#commentBox').append(`
 			<div class="commentBG compactBG">
 				<div class="comment compact">
-					<img class="inline" src="../icon/${!history ? x.username : lvl.username}" height=21% style="margin-right: 0.8%">
-					<a href=../${x.accountID == "0" ? `search/${x.playerID}?user` : `../profile/${!history ? x.username : lvl.username}`}>
-					<h2 class="inline gdButton ${x.accountID == "0" ? "green unregistered" : ""}">${!history ? x.username : lvl.username}</h2></a>
-					${x.modColor || lvl.moderator == "2" ? `<img class="inline" src="../assets/mod.png" height=18% style="margin-left: 0.6%;">` : ""}
+					<img class="inline" src="../icon/${userLink}?form=${x.form}" height=21% style="margin-right: 0.8%">
+					<a href=../${x.accountID == "0" ? `search/${x.playerID}?user` : `../profile/${userLink}`}>
+					<h2 class="inline gdButton ${x.accountID == "0" ? "green unregistered" : ""}">${userName}</h2></a>
+					${modNumber > 0 ? `<img class="inline" src="../assets/mod.png" height=18% style="margin-left: 0.6%;">` : ""}
 					<p class="commentPercent inline">${x.percent ? x.percent + "%" : ""}</p>
 
 					<div class="commentAlign">
-						<p class="commentText" style="color: ${!history && x.playerID == lvl.authorID ? "rgb(255, 255, 75)" : x.playerID == "16" ? "rgb(50, 255, 255)" : x.modColor || lvl.moderator == "2" ? `rgb(75, 255, 75)` : "white"}">${x.content}</p>
+						<p class="commentText" style="color: rgb(${!history && x.playerID == lvl.authorID ? "255, 255, 75" : x.playerID == "16" ? "50, 255, 255" : modNumber == "2" ? "75, 255, 75" : x.browserColor ? "255, 180, 255" : "255, 255, 255"})">${clean(x.content)}</p>
 					</div>
 				</div>
 				<p class="commentDate compactDate">${x.date}</p>
@@ -267,7 +273,6 @@ fetch(`../api${!history ? window.location.pathname : "/comments/" + lvl.playerID
 	 $('#loading').hide()
 	 return loadingComments = false;
 	})
-
 }
 
 loadingComments = false
@@ -327,10 +332,10 @@ $('#submitComment').click(function() {
 		allowEsc = false
 
 	fetch(`../api/profile/${username}`).then(res => res.json()).then(res => {
-		if (!res || res == "-1") {$('.postbutton').show(); return $('#message').text("The username you provided doesn't exist!")}
+		if (!res || res == "-1") {allowEsc = true; $('.postbutton').show(); return $('#message').text("The username you provided doesn't exist!")}
 		else accountID = res.accountID
 
-		$.post("../postComment",  {comment, username, password, levelID, accountID })
+		$.post("../postComment",  {comment, username, password, levelID, accountID, color: true})
 		.done(x => {
 			$('#content').val("")
 			$('#postComment').hide()
@@ -343,7 +348,7 @@ $('#submitComment').click(function() {
 			page = 0
 			appendComments()
 		})		
-		.fail(e => {$('.postbutton').show();$('#message').text(e.responseText.includes("DOCTYPE") ? "Something went wrong..." : e.responseText)})
+		.fail(e => {allowEsc = true; $('.postbutton').show();$('#message').text(e.responseText.includes("DOCTYPE") ? "Something went wrong..." : e.responseText)})
 	})
 })
 
@@ -394,7 +399,7 @@ $('#submitVote').click(function() {
 		allowEsc = false
 
 	fetch(`../api/profile/${username}`).then(res => res.json()).then(res => {
-		if (!res || res == "-1") {$('.postbutton').show(); return $('#likeMessage').text("The username you provided doesn't exist!")}
+		if (!res || res == "-1") {allowEsc = true; $('.postbutton').show(); return $('#likeMessage').text("The username you provided doesn't exist!")}
 		else accountID = res.accountID
 
 		 $.post("../like",  { ID, accountID, password, like: likeType, type: 2, extraID })
@@ -411,19 +416,24 @@ $('#submitVote').click(function() {
 			likedComments.push(commentID)
 			localStorage.setItem('likedComments', JSON.stringify(likedComments))
 		})		
-		.fail(e => {$('.postbutton').show();$('#likeMessage').text(e.responseText.includes("DOCTYPE") ? "Something went wrong..." : e.responseText)}) 
+		.fail(e => {allowEsc = true; $('.postbutton').show();$('#likeMessage').text(e.responseText.includes("DOCTYPE") ? "Something went wrong..." : e.responseText)})
 	})
 })
 */
 $(window).on('beforeunload ', function() {
-//0 - recent, 1 - top, 2 - recent/compact, 3 - top/compact
-localStorage.setItem('commentPreset', JSON.stringify({
-  mode,
-  compact
-}))
+	localStorage.setItem('commentPreset', JSON.stringify({mode, compact}))
+})
+
+$('#postComment').on("change keyup keydown paste click", "textarea", function () {
+	$('#content').val($('#content').val().replace(/[^\S ]+/g, ""))
 })
 
 $(document).keydown(function(k) {
+
+	if ($('#content').is(':visible')) {
+		if (k.which == 13) k.preventDefault() //enter
+	}
+
 	if (loadingComments || $('.popup').is(":visible")) return;
 
     if (k.which == 37 && $('#pageDown').is(":visible")) { //left

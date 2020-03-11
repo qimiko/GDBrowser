@@ -7,20 +7,28 @@ const blocks = require('../misc/blocks.json')
 
 module.exports = async (app, req, res, level) => {
 
-let levelString = Buffer.from(level.data, 'base64')
-let buffer;
+let unencrypted = level.data.startsWith('kS') // some gdps'es don't encrypt level data
+let levelString = unencrypted ? level.data : Buffer.from(level.data, 'base64') 
 let response = {};
+let rawData;
 
-try { buffer = pako.inflate(levelString, {to:"string"}) }
-catch(e) { return res.send("-1") }
+if (unencrypted) rawData = level.data
 
-let rawData = buffer.toString('utf8')
-let data = rawData
+else {
+    let buffer;
+    try { buffer = pako.inflate(levelString, {to:"string"}) }
+    catch(e) { return res.send("-1") }
+    rawData = buffer.toString('utf8')
+}
+
+let data = rawData; // data is tweaked around a lot, so rawData is preserved
 
 let blockNames = Object.keys(blocks)
 let miscNames = Object.keys(ids.misc)
 let blockCounts = {}
 let miscCounts = {}
+let triggerGroups = []
+let highDetail = 0
 
 data = data.split(";")
 
@@ -45,6 +53,9 @@ data.forEach((x, y) => {
     if (ids.portals[id]) obj.portal = ids.portals[id]
     if (ids.orbs[id]) obj.orb = ids.orbs[id]
     if (ids.triggers[id]) obj.trigger = ids.triggers[id]
+
+    if (obj.triggerGroups) obj.triggerGroups.split('.').forEach(x => triggerGroups.push(x))
+    if (obj.highDetail == 1) highDetail += 1 
 
     blockNames.forEach(b => {
         if (blocks[b].includes(id)) {
@@ -73,9 +84,10 @@ response.level = {
 }
 
 response.objects = data.length - 2
+response.highDetail = highDetail
 response.settings = {}
 
-response.portals = data.filter(x => x.portal).sort(function (a, b) {return parseInt(a.x) - parseInt(b.x)}).map(x => x.portal + " " + Math.round(x.x / last * 99) + "%").join(", ")
+response.portals = data.filter(x => x.portal).sort(function (a, b) {return parseInt(a.x) - parseInt(b.x)}).map(x => x.portal + " " + Math.floor(x.x / (Math.max(last, 529.0) + 340.0) * 100) + "%").join(", ")
 
 response.orbs = {}
 orbArray = data.filter(x => x.orb).reduce( (a,b) => { //stolen from https://stackoverflow.com/questions/45064107/how-do-i-group-duplicate-objects-in-an-array
@@ -93,9 +105,18 @@ triggerArray = data.filter(x => x.trigger).reduce( (a,b) => {
 triggerArray.forEach(x => response.triggers[x.trigger] = x.count)
 response.triggers.total = data.filter(x => x.trigger).length
 
+response.triggerGroups = {}
 response.blocks = sortObj(blockCounts)
 response.misc = sortObj(miscCounts, '0')
 response.colors = []
+
+triggerGroups.forEach(x => {
+    if (response.triggerGroups['Group ' + x]) response.triggerGroups['Group ' + x] += 1
+    else response.triggerGroups['Group ' + x] = 1
+})
+
+response.triggerGroups = sortObj(response.triggerGroups)
+response.triggerGroups.total = Object.keys(response.triggerGroups).length
 
 Object.keys(data[0]).forEach(x => {
     let val = init.values[x]
@@ -171,6 +192,14 @@ Object.keys(data[0]).forEach(x => {
             if (colorObj.copiedChannel > 1000) delete colorObj.copiedChannel;
             if (colorObj.pColor == "-1") delete colorObj.pColor
             if (colorObj.blending) colorObj.blending = true
+            if (colorObj.copiedHSV) {
+                let hsv = colorObj.copiedHSV.split("a")
+                colorObj.copiedHSV = {}
+                hsv.forEach((x, y) => { colorObj.copiedHSV[colorStuff.hsv[y]] = x })
+                colorObj.copiedHSV['s-checked'] = colorObj.copiedHSV['s-checked'] == 1
+                colorObj.copiedHSV['v-checked'] = colorObj.copiedHSV['v-checked'] == 1
+            if (colorObj.copyOpacity == 1) colorObj.copyOpacity = true
+            }
             colorObj.opacity = +Number(colorObj.opacity).toFixed(2)
             colorList[y] = colorObj
 
