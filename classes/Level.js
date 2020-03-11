@@ -15,8 +15,8 @@ class Level {
         this.authorID = levelInfo[6]
         this.accountID = author[2] || 0
         this.difficulty = difficulty[levelInfo[9]]
-        this.downloads = levelInfo[10]
-        this.likes = levelInfo[14]
+        this.downloads = levelInfo[10] - 300
+        this.likes = levelInfo[14] - 100
         this.disliked = levelInfo[14] < 0
         this.length = length[levelInfo[15]] || "XL"
         this.stars = levelInfo[18]
