@@ -1,11 +1,12 @@
-const request = require('request')
+const request = require('request');
+const util = require('util');
 const XOR = require('../../classes/XOR.js');
 const xor = new XOR();
 const crypto = require('crypto')
 function sha1(data) { return crypto.createHash("sha1").update(data, "binary").digest("hex"); }
 
 let rateLimit = {};
-let cooldown = 150  // GD has a secret rate limit and doesn't alert you when a comment is rejected, so I'm doing the honors 
+let cooldown = 150  // GD has a secret rate limit and doesn't alert you when a comment is rejected, so I'm doing the honors
 
 function getTime(time) {
   let seconds = Math.ceil(time / 1000);
@@ -23,6 +24,24 @@ module.exports = async (app, req, res) => {
   if (req.body.comment.includes('\n')) return res.status(400).send("Comments cannot contain line breaks!")
 
   if (rateLimit[req.body.username]) return res.status(400).send(`Please wait ${getTime(rateLimit[req.body.username] + cooldown - Date.now())} seconds before posting another comment!`)
+
+  // authenticationt
+  const postPromise = util.promisify(request.post);
+
+  try {
+    const resp = await postPromise(app.endpoint + "api/login", {
+      form: {
+        username: req.body.username,
+        password: req.body.password
+      },
+      json: true
+    });
+    if (!resp.body.success) {
+      return res.status(400).send("bad pass");
+    }
+  } catch (err) {
+    return res.status(400).send("that shouldn't happen");
+  }
 
   let params = {
     gameVersion: app.gameVersion,
