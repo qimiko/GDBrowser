@@ -50,7 +50,7 @@ module.exports = async (app, req, res) => {
     percent: 0
   }
 
-  params.comment = new Buffer(req.body.comment)
+  params.comment = Buffer.from(req.body.comment)
   params.gjp = ""
   params.levelID = req.body.levelID.toString()
   params.accountID = req.body.accountID.toString()
@@ -59,8 +59,9 @@ module.exports = async (app, req, res) => {
   let percent = 0
   if (percent && percent > 0 && percent <= 100) params.percent = percent.toString()
 
-  request.post(app.endpoint + 'uploadGJComment.php', {
-    form: params
+  request.post(app.endpoint + 'uploadGJComment19.php', {
+    form: params,
+    headers: {'x-forwarded-for': req.headers['x-real-ip']} // prevent pesky ip bans
   }, function (err, resp, body) {
     if (err) return res.status(400).send("The Geometry Dash servers returned an error! Perhaps they're down for maintenance")
     if (!body || body == "-1") return res.status(400).send("The Geometry Dash servers rejected your comment! Try again later, or make sure your username and password are entered correctly.")

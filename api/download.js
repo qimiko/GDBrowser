@@ -3,6 +3,12 @@ const fs = require('fs')
 const Level = require('../classes/Level.js')
 module.exports = async (app, req, res, api, ID, analyze) => {
 
+  if (app.offline) {
+    if (!api && levelID < 0) return res.redirect('/')
+    if (!api) return res.redirect('search/' + req.params.id)
+    else return res.send("-1")
+  }
+
   let levelID = ID || req.params.id
   if (levelID == "daily") levelID = -1
   else if (levelID == "weekly") levelID = -2
@@ -17,7 +23,7 @@ module.exports = async (app, req, res, api, ID, analyze) => {
     }
   }, async function (err, resp, body) {
 
-    if (err || !body || body == '-1') {
+    if (err || !body || body == '-1' || body.startsWith("<!")) {
       if (!api && levelID < 0) return res.redirect('/')
       if (!api) return res.redirect('search/' + req.params.id)
       else return res.send("-1")
@@ -88,13 +94,14 @@ module.exports = async (app, req, res, api, ID, analyze) => {
 
           if (level.difficulty == "Demon") {
             request.get('https://pointercrate.xyze.dev/api/v1/demons/?name=' + level.name.trim(), function (err, resp, demonList) {
+                if (err) return sendLevel()
                 let demon = JSON.parse(demonList)
                 if (demon[0] && demon[0].position <= 150) level.demonList = demon[0].position
                 return sendLevel()
             })
         }
 
-          return sendLevel()
+          else return sendLevel()
 
         })
       })

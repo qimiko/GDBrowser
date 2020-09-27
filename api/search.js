@@ -1,12 +1,11 @@
 const request = require('request')
-const orbs =  [0, 0, 50, 75, 125, 175, 225, 275, 350, 425, 500]
-const difficulty = {0: 'Unrated', 10: 'Easy', 20: 'Normal', 30: 'Hard', 40: 'Harder', 50: 'Insane'}
-const length = ['Tiny', 'Short', 'Medium', 'Long', 'XL']
 const mapPackGettin = require('./mappack.js')
 const levels = require('../misc/level.json').music
 const Level = require('../classes/Level.js')
 
 module.exports = async (app, req, res) => {
+
+    if (app.offline) return res.send("-1")
 
     let amount = 10;
     let count = req.query.count ? parseInt(req.query.count) : null
@@ -20,8 +19,9 @@ module.exports = async (app, req, res) => {
 
         diff: req.query.diff || '-',
         page: req.query.page || 0,
-        len: req.query.length || '-',
-        song: req.query.songID || '',
+        len: req.query.length,
+        song: req.query.songID,
+
         featured: req.query.hasOwnProperty("featured") ? 1 : 0,
         originalOnly: req.query.hasOwnProperty("original") ? 1 : 0,
         twoPlayer: req.query.hasOwnProperty("twoPlayer") ? 1 : 0,
@@ -67,13 +67,15 @@ module.exports = async (app, req, res) => {
         if (!req.params.text.match(/^[0-9]*$/)) return app.run.profile(app, req, res, null, req.params.text)
     } 
 
+    if (req.query.hasOwnProperty("creators")) filters.type = 12
+
     if (req.params.text == "*") delete filters.str
 
 
     request.post(app.endpoint + 'getGJLevels19.php', {
     form : filters}, async function(err, resp, body) {
         
-    if (err || !body || body == '-1') return res.send("-1")
+    if (err || !body || body == '-1' || body.startsWith("<!")) return res.send("-1")
     let splitBody = body.split('#')
     let preRes = splitBody[0].split('|', 10)
     let authorList = {}

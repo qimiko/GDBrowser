@@ -135,6 +135,7 @@
 				<p>gameVersion: The version of GD the level was released on (1.9, 2.1, etc)</p>
 				<p>version: Number of times the level was updated</p>
 				<p>copiedID: The original level ID, if the level was copied. Otherwise returns 0</p>
+				<p>twoPlayer: If the level has two player mode enabled</p>
 				<p>officialSong: The level number of the song, if no custom song is used. Otherwise returns 0</p>
 				<p>customSong: The ID of the song, if a custom song was used. Otherwise returns 0</p>
 				<p>coins: Number of user coins placed in the level</p>
@@ -184,9 +185,9 @@
 			<p>Unlike the Geometry Dash API, both username and ID can be used to fetch a user profile.</p>
 
 			<br>
-			<p class="reveal" onclick="$('#params-profile').slideToggle(100)"><b>Parameters (0)</b></p>
+			<p class="reveal" onclick="$('#params-profile').slideToggle(100)"><b>Parameters (1)</b></p>
 			<div class="subdiv" id="params-profile">
-				<p>No parameters for this one!</p>
+				<p>account: Forces the account ID to be used for fetching (normally Player ID is tried first)</p>
 			</div>
 
 			<br>
@@ -210,7 +211,7 @@
 				<p>twitter: The URL of the player's Twitter account, if linked. Plug it into https://twitter.com/{twitter}</p>
 				<p>twitch: The URL of the player's Twitch account, if linked. Plug it into https://twitch.tv/{twitch}</p>
 				<p>glow: If the player's icon has a glow or not</p>
-				<p>icon, ship, ball, ufo, wave, robot, spider, col1, col2, deathEffect: The number of the icon/color used for each form. The actual icon needs to be manually constructed. My <a href="https://gdcolon.com/tools/iconkit" target="_blank">Online Icon Kit</a> could be of assistance.</p>
+				<p>icon, ship, ball, ufo, wave, robot, spider, col1, col2, deathEffect: The number of the icon/color used for each form. The actual icon can be generated through <a href="#icons">/icon</a></p>
 			</div>
 
 			<br>
@@ -241,7 +242,7 @@
 			<p>Use an asterisk (*) as your search query if you do not wish to search by level name (if you intend on using filters)</p>
 
 			<br>
-			<p class="reveal" onclick="$('#params-search').slideToggle(100)"><b>Parameters (17)</b></p>
+			<p class="reveal" onclick="$('#params-search').slideToggle(100)"><b>Parameters (18)</b></p>
 			<div class="subdiv" id="params-search">
 				<p>Buckle up... there's a lot</p>
 
@@ -259,6 +260,7 @@
 				<br>
 				<p><b>Params that require a string</b> (e.g. ?type=trending)</p>
 				<p>type: The type of search to perform, see <u>search types</u> below</p>
+				<p>creators: A comment seperated list of account IDs. Only levels by those players will be returned</p>
 
 				<br>
 				<p><b>Params that require anything</b> (e.g. ?mappack=yes or ?mappack)</p>
@@ -320,14 +322,16 @@
 			<h1>Leaderboards</h1>
 			<p>/api/leaderboard</p>
 
-			<p>Simply returns the top player leaderboard</p>
+			<p>Returns the top player, creator, and accurate leaderboards</p>
 
 			<br>
-			<p class="reveal" onclick="$('#params-leaderboard').slideToggle(100)"><b>Parameters (3)</b></p>
+			<p class="reveal" onclick="$('#params-leaderboard').slideToggle(100)"><b>Parameters (5)</b></p>
 			<div class="subdiv" id="params-leaderboard">
 				<p>count: The amount of players to list (default is 100, max is 5000, does not work with accurate leaderboard)</p>
 				<p>creator: Fetches the creator leaderboard</p>
 				<p>accurate: Fetches the accurate leaderboard</p>
+				<p>type: Accurate leaderboard only - the type of stat to sort by (stars, coins, or demons)</p>
+				<p>gd: Accurate leaderboard only - formats the leaderboard using GD's number:value syntax (for use in GD)</p>
 			</div>
 
 			<br>
@@ -429,7 +433,7 @@
 			</div>
 
 			<br>
-			<p class="reveal" onclick="$('#response-comment').slideToggle(100)"><b>Response (10)</b></p>
+			<p class="reveal" onclick="$('#response-comment').slideToggle(100)"><b>Response (13)</b></p>
 			<div class="subdiv" id="response-comment">
 				<p>The API will return an array of each comment with the following information.<br>Values that don't work for profile posts are in <span style="color:red">red</span></p>
 				<p>content: The comment text</p>
@@ -443,7 +447,8 @@
 				<p class="red">accountID: The commenter's account ID</p>
 				<p class="red">form: The form of the commenter's icon</p>
 				<p class="red">percent: The commenter's percent on the level, if provided</p>
-				<p class="red">moderator: If type of moderator the commenter is. Returns 0 (none), 1 (mod) or 2 (elder, green text)</p></p>
+				<p class="red">color: The RGB font color of the comment. Note that the yellow author text is not included</p>
+				<p class="red">moderator: If type of moderator the commenter is. Returns 0 (none), 1 (mod) or 2 (elder, green text)</p>
 			</div>
 
 			<br>
@@ -709,15 +714,18 @@
 			<p style="font-size:15px; margin-top:-7px">This one isn't really part of the API, but dammit, my website my rules</p>
 
 			<br>
-			<p class="reveal" onclick="$('#params-icons').slideToggle(100)"><b>Parameters (6)</b></p>
+			<p class="reveal" onclick="$('#params-icons').slideToggle(100)"><b>Parameters (9)</b></p>
 			<div class="subdiv" id="params-icons">
 				<p><b>Parameters can be used to modify parts of a fetched user's icon</b></p>
 				<p>IDs generally correspond to their order of appearance in GD</p>
-				<p>form: The form of the icon (cube/ship/ball/ufo/wave/robot/spider/cursed)</p>
+				<p>form: The form of the icon (cube/ship/ball/ufo/wave/robot/spider/swing/cursed)</p>
 				<p>icon: The ID of the icon to use</p>
 				<p>col1: The ID of the primary color to use</p>
 				<p>col2: The ID of the secondary color to use</p>
+				<p>col3: Optional color ID to overwrite the 'white' layer used by some detailed icons</p>
 				<p>glow: If the icon should have a glow/outline (0 = off, anything else = on)</p>
+				<p>size: The size in pixels that the icon should be (always square), in case you don't want the default. "Auto" also works.</p>
+				<p>topless: Removes the glass 'dome' from generated UFOs (legacy)</p>
 				<p>noUser: Disables fetching the icon from the GD servers. Slightly faster, but comes at the cost of having to build icons from the ground up using the parameters listed above. It completely ignores the entered username and always returns the default icon</p>
 			</div>
 
