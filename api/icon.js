@@ -5,7 +5,6 @@ const path = require('path');
 const icons = require('../icons/gameSheet.json');
 const colors = require('../misc/colors.json');
 const forms = require('../icons/forms.json')
-const offsets = require('../icons/offsets.json');
 
 function recolor(img, col) {
   return img.scan(0, 0, img.bitmap.width, img.bitmap.height, function (x, y, idx) {
@@ -94,29 +93,8 @@ module.exports = async (app, req, res) => {
       let originalOffset = icons[icon].spriteOffset;
       let minusOrigOffset = function(x, y) { return x - originalOffset[y] }
       let offset = icons[glow].spriteOffset.map(minusOrigOffset);
-      let robotLeg1, robotLeg2, robotLeg3, robotLeg3b, robotLeg2b, robotLeg1b, robotLeg1c;
-      let robotOffset1, robotOffset2, robotOffset3, robotOffset1b, robotOffset2b, robotOffset3b;
-      let robotGlow1, robotGlow2, robotGlow3
       let ufoTop, ufoOffset, ufoCoords, ufoSprite
       let extrabit, offset2, size2;
-
-      if (isSpecial) {
-        const legs = [1,2,3].map(function(val) {return genImageName(`0${val+1}`)});
-        const glows = [1,2,3].map(function(val) {return genImageName(`0${val+1}`, '2')});
-        robotOffset1 = icons[legs[0]].spriteOffset.map(minusOrigOffset).concat(icons[legs[0]].spriteSize);
-        robotOffset2 = icons[legs[1]].spriteOffset.map(minusOrigOffset).concat(icons[legs[1]].spriteSize);
-        robotOffset3 = icons[legs[2]].spriteOffset.map(minusOrigOffset).concat(icons[legs[2]].spriteSize);
-
-        robotOffset1b = icons[glows[0]].spriteOffset.map(minusOrigOffset).concat(icons[glows[0]].spriteSize);
-        robotOffset2b = icons[glows[1]].spriteOffset.map(minusOrigOffset).concat(icons[glows[1]].spriteSize);
-        robotOffset3b = icons[glows[2]].spriteOffset.map(minusOrigOffset).concat(icons[glows[2]].spriteSize);
-
-        robotLeg1 = new Jimp(fromIcons(legs[0])); robotGlow1 = new Jimp(fromIcons(glows[0]))
-        robotLeg2 = new Jimp(fromIcons(legs[1])); robotGlow2 = new Jimp(fromIcons(glows[1]))
-        robotLeg3 = new Jimp(fromIcons(legs[2])); robotGlow3 = new Jimp(fromIcons(glows[2]))
-
-        if (!glowOffset.length) glowOffset = offsets[form][+iconID] || []
-      }
 
       Jimp.read(fromIcons(glow)).then(async function (image) {
 
