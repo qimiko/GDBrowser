@@ -40,8 +40,9 @@ module.exports = async (app, req, res) => {
     if (req.query.mappack) {
         const mapPacks = await mapPackGettin(app);
         foundPack = mapPacks[req.params.text];
-        if (foundPack) filters.str = `${foundPack[0]},${foundPack[1]},${foundPack[2]}`;
-        if (foundPack.length == 5) filters.str += `,${foundPack[3]};`
+        foundPack.pop();
+
+        if (foundPack) filters.str = foundPack.join(',');
     }
 
     if (req.query.gauntlet || req.query.hasOwnProperty("mappack") || req.query.type == "saved") filters.type = 10
