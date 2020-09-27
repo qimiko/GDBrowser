@@ -7,10 +7,10 @@ module.exports = async (app, req, res) => {
 
     if (app.offline) return res.send("-1")
 
-    let amount = 10;
+    let amount = 15;
     let count = req.query.count ? parseInt(req.query.count) : null
     if (count && count > 0) {
-      if (count > 10) amount = 10
+      if (count > 15) amount = 15
       else amount = count;
     }
 
@@ -77,7 +77,7 @@ module.exports = async (app, req, res) => {
         
     if (err || !body || body == '-1' || body.startsWith("<!")) return res.send("-1")
     let splitBody = body.split('#')
-    let preRes = splitBody[0].split('|', 10)
+    let preRes = splitBody[0].split('|', 15)
     let authorList = {}
     let songList = {}
     let authors = splitBody[1].split('|')
@@ -85,7 +85,7 @@ module.exports = async (app, req, res) => {
     songs = songs.split(':~1~|').map(x => app.parseResponse((x.startsWith('~1~|') ? '' : '~1~|') + x, '~|~'))
     songs.forEach(x => {songList[x['~1']] = x['2']})
 
-    authors.splice(10, 999)
+    authors.splice(15, 999)
     authors.forEach(x => {
         if (x.startsWith('~')) return
         let arr = x.split(':')
