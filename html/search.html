@@ -130,6 +130,9 @@ let superSearch = ['*', '*?type=mostliked', '*?type=mostdownloaded', '*?type=rec
 
 let searchFilters = `../api/search/${type == 'saved' ? JSON.parse(localStorage.getItem('saved') || '[]').reverse().toString() : accID || path}?page=[PAGE]${window.location.search.replace(/\?/g, "&").replace("page", "nope")}`
 
+const is_mappack = !!url.searchParams.get('mappack');
+const mappack_header = is_mappack ? url.searchParams.get('pack_name') : "";
+
 if (type == "followed") {
 	let followed = localStorage.followed ? JSON.parse(localStorage.followed) : []
 	searchFilters += ("&creators=" + followed.join()) 
@@ -245,6 +248,10 @@ if (gauntlet) {
 }
 
 if (!$('#header').text() && typeof userMode != "string") $('#header').text(path == "*" ? "Online Levels" : decodeURIComponent(path))
+
+if (mappack_header) {
+	$('#header').text(mappack_header);
+}
 
 $('.closeWindow').click(function() {$(".popup").attr('style', 'display: none;')})
 

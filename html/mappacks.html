@@ -33,14 +33,15 @@
 <script>
 
 fetch('../api/mappacks').then(res => res.json()).then(packs => {
-	keys = Object.keys(packs)
-	keys.forEach(x => {
+	for (const mappack of packs) {
 		$('#packList').append(`
-			<div class="mappack">
-			<a href="../search/${x}?mappack=1">
-			<img src="../difficulty/${packs[x][packs[x].length-1]}.png" height="220%"><br>
-			<h3 class="gauntletText"">${x.replace("Pack", "<br>Pack")}</h3></div></a>`)
-	})
+				<div class="mappack">
+				<a href="../search/${mappack.id}?mappack=1&pack_name=${mappack.name}">
+				<img src="../difficulty/${mappack.difficulty}.png" height="220%"><br>
+				<h3 class="gauntletText" style="color:rgb(${mappack.color.r},${mappack.color.g},${mappack.color.b});">
+					${mappack.name.replace("Pack", "<br>Pack")}
+				</h3></div></a>`)
+	}
 });
 
 </script>

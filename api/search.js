@@ -38,11 +38,15 @@ module.exports = async (app, req, res) => {
     let foundPack = false;
 
     if (req.query.mappack) {
-        const mapPacks = await mapPackGettin(app);
-        foundPack = mapPacks[req.params.text];
-        foundPack.pop();
+        const mapPacks = await mapPackGettin(app, true);
 
-        if (foundPack) filters.str = foundPack.join(',');
+        const found_map_pack = mapPacks.find((pack) => pack.id == req.params.text);
+
+        if (found_map_pack) {
+            found_levels = found_map_pack.levels;
+
+            if (found_map_pack) filters.str = found_levels.join(',');
+        }
     }
 
     if (req.query.gauntlet || req.query.hasOwnProperty("mappack") || req.query.type == "saved") filters.type = 10
