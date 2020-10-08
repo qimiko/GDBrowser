@@ -48,7 +48,7 @@ async function getListOfPacks(app, page, use_verify) {
 	let packArray = []
 	for (const pack of response.body.split('|')) {
 		const result = app.parseResponse(pack, ':');
-		const levels = result['3'].split(',');
+		const levels = result['3'].split(',').map(x => +x);
 		const diff = difficulty[result['6']];
 
 		const pack_obj = {
@@ -62,7 +62,7 @@ async function getListOfPacks(app, page, use_verify) {
 		}
 
 		if ('7' in result) {
-			const colors = result['7'].split(',');
+			const colors = result['7'].split(',').map(x => +x);
 
 			const color_result = {
 				r: colors[0],
@@ -71,6 +71,18 @@ async function getListOfPacks(app, page, use_verify) {
 			}
 
 			pack_obj["color"] = color_result;
+		}
+
+		if ('8' in result) {
+			const progress_colors = result['8'].split(',').map(x => +x);
+
+			const color_result = {
+				r: progress_colors[0],
+				g: progress_colors[1],
+				b: progress_colors[2]
+			}
+
+			pack_obj["progress_color"] = color_result;
 		}
 
 		packArray.push(pack_obj);
