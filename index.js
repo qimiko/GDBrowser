@@ -70,6 +70,7 @@ app.use(async function(req, res, next) {
   req.endpoint = req.server.endpoint
   req.onePointNine = req.server.onePointNine
   req.timestampSuffix = req.server.timestampSuffix || ""
+  req.demonlistEndpoint = req.server.demonlistEndpoint
   req.id = req.server.id || "gd"
   req.isGDPS = req.server.endpoint != "http://boomlings.com/database/"
 

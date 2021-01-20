@@ -70,7 +70,7 @@ rename/obfuscate them. (e.g. `{ "levelID": "oiuyhxp4w9I" }`)
 [object] **overrides:** A list of endpoint substitutions, because some servers 
 use renamed or older versions. (e.g. `{ "getGJLevels21": "dorabaeChooseLevel42" }`)
 
-  
+[string] **demonlistEndpoint:** A URL pointing to a Pointercrate host. (e.g. `https://www.pointercrate.com/` - this too must end with a slash)
 
 # Folders
 
