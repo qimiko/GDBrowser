@@ -128,7 +128,11 @@ async function buildIcon(account=[], userCode) {
     if (legSection) {
       left += Math.floor(legSection.xPos)
       top -= Math.floor(legSection.yPos)
-      // if (legSection.darken) builtPart.tint({r: 100, g: 100, b: 100})
+
+      if (part == 1 || part == 2) {
+        if (legSection.darken) builtPart = builtPart.modulate({ brightness: legSection.darken / 100 });
+      }
+
       if (legSection.rotation) {
         builtPart.rotate(legSection.rotation, {background: TRANSPARENT})
         if (part == "glow") { left--; top--; }
