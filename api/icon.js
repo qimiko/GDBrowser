@@ -173,10 +173,10 @@ async function buildIcon(account=[], userCode) {
     await addLayer(1, col1, legSection) // primary color
     if (hasExtra) await addLayer("extra", colW, legSection) // extra
 
-    // if (legSection) {
-    //   let foundLeg = legLayers[legSection.leg]
-    //   foundLeg.forEach(x => layers.push(x))
-    // }
+    if (legSection) {
+       let foundLeg = legLayers[legSection.leg]
+       foundLeg.forEach(x => layers.push(x))
+    }
   }
 
   let layers = []
@@ -185,11 +185,11 @@ async function buildIcon(account=[], userCode) {
   let parentSize = icons[getPartName(1).slice(mainPath.length)].spriteSize
   let canvas = sharp({create: {width: canvasSize, height: canvasSize, channels: 4, background: TRANSPARENT}})
 
-  // if (legData.length) {
-  //   for (let i=0; i<legData.length; i++) {
-  //     await buildFullLayer(legData[i])
-  //   }
-  // }
+  if (legData.length) {
+     for (let i=0; i<legData.length; i++) {
+       await buildFullLayer(legData[i])
+     }
+  }
 
   await buildFullLayer()
 
@@ -284,8 +284,8 @@ async function buildIcon(account=[], userCode) {
 // ==================================== //
 
 // OLD CODE IS BEING USED FOR ROBOTS AND SPIDERS
-let formCheck = forms[req.query.form]
-if (formCheck && formCheck.legs) return app.run.icon_old(app, req, res)
+// let formCheck = forms[req.query.form]
+// if (formCheck && formCheck.legs) return app.run.icon_old(app, req, res)
 
 let username = req.params.text
 let userCode;

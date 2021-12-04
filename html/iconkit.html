@@ -154,8 +154,8 @@ function colorSplit() {
 }
 function psdCheck() {
     let psdHref = $('#psdLink').attr('href').toLowerCase()
-    if (psdHref.includes("&form=robot") || psdHref.includes("&form=spider")) { $('#downloadPSD').hide(); $('#psdDisabled').show() }
-    else { $('#downloadPSD').show(); $('#psdDisabled').hide() }
+    $('#downloadPSD').show();
+    $('#psdDisabled').hide();
 }
 
 forms.forEach(form => {
