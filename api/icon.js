@@ -143,8 +143,12 @@ async function buildIcon(account=[], userCode) {
 
     let behind = 0;
     if (legSection) {
-      // replicate old behavior if zOrder is not defined
-      behind = legSection.zOrder || (legSection.darken ? -1 : 0);
+      if (part == "glow") {
+        behind = -2;
+      } else {
+        // replicate old behavior if zOrder is not defined
+        behind = legSection.zOrder || (legSection.darken ? -1 : 0);
+      }
     }
 
     let layerData = {
