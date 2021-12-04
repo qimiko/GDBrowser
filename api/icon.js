@@ -141,11 +141,16 @@ async function buildIcon(account=[], userCode) {
       if (legSection.xFlip) builtPart.flop()
     }
 
+    let behind = 0;
+    if (legSection) {
+      // replicate old behavior if zOrder is not defined
+      behind = legSection.zOrder || (legSection.darken ? -1 : 0);
+    }
+
     let layerData = {
       partName, spriteOffset, spriteSize, leg,
       layerName: partNames[part],
-      behind: legSection && legSection.darken,
-      isGlow: part == "glow",
+      behind,
       input: await builtPart.toBuffer(),
       left, top 
     }
@@ -188,7 +193,8 @@ async function buildIcon(account=[], userCode) {
 
   await buildFullLayer()
 
-  // if (legData.length) layers = legLayers.flat().filter(x => x).sort((a, b) => !!b.behind - !!a.behind).sort((a, b) => !!b.isGlow - !!a.isGlow)
+  if (legData.length) layers = legLayers.flat().filter(x => x)
+    .sort((a, b) => a.behind - b.behind);
 
   canvas.composite(layers)
 

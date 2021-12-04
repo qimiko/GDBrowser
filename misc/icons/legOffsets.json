@@ -4,27 +4,30 @@
             "name": "base",
             "leg": 1,
             "xPos": 2.3,
-            "yPos": 16.2
+            "yPos": 16.2,
+            "zOrder": 0
           },
           {
             "name": "connector",
             "leg": 4,
             "xPos": -30,
             "yPos": -6,
-            "darken": 49.6
+            "zOrder": -2
           },
           {
             "name": "leftmost",
             "leg": 3,
             "xPos": -74,
             "yPos": -24.2,
-            "rotation": 38.964
+            "rotation": 38.964,
+            "zOrder": 1
           },
           {
             "name": "middle left",
             "leg": 2,
             "xPos": -9.9,
-            "yPos": -24
+            "yPos": -24,
+            "zOrder": 2
           },
           {
             "name": "middle right",
@@ -32,7 +35,8 @@
             "xPos": 20.1,
             "yPos": -32,
             "yScale": 0.884,
-            "darken": 49.6
+            "darken": 49.6,
+            "zOrder": -1
           },
           {
             "name": "rightmost",
@@ -41,7 +45,8 @@
             "yPos": -31,
             "yScale": 0.884,
             "xFlip": true,
-            "darken": 49.6
+            "darken": 49.6,
+            "zOrder": -1
           }
     ],
     
