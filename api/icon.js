@@ -117,6 +117,8 @@ async function buildIcon(account=[], userCode) {
 
     let partName = getPartName(part, leg)
     let offsetData = icons[partName.slice(mainPath.length)]
+    if (!offsetData) { return; } // glow is missing for the subzero icons, which caused an error
+
     let { spriteSize, spriteOffset } = offsetData
 
     let builtPart = sharp(partName.slice(1)) // slice 1 from filename since sharp also reads paths differently
